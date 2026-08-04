@@ -1,32 +1,32 @@
-# Executive Architecture & Cost Proposal: DataBlue Next-Gen Infrastructure Platform
+# 架构与成本总体建议书：DataBlue 新一代基础设施平台
 
-**Project Identifier**: `datablue-nextgen-infra-platform`  
-**Document Version**: 2.5 (Unified SRE & DevSecOps RACI Proposal)  
-**Governance Standard**: Architecture-First Governance Standard
-
----
-
-## 1. Executive Summary
-
-This proposal presents the complete technical, operational, and financial specifications for building the **DataBlue Next-Gen Infrastructure Platform** (`datablue-nextgen-infra-platform`).
-
-The customer requires an enterprise-grade, cloud-native Kubernetes platform designed to host approximately **40 microservices** across **5 to 6 business systems**, featuring strict isolation between **Test** and **Production** environments, automated CI/CD deployments using GitLab, Jenkins, and Ansible, and robust middleware infrastructure (MySQL, RabbitMQ, MongoDB, Redis, and Nacos).
-
-### Key Architectural Highlights
-* **Multi-Account Landing Zone**: Physical account isolation across `DataBlue-Test-Account`, `DataBlue-Prod-Account`, `Shared-Services-Account`, and `Security-Account` (`ADR-001`, `ADR-002`).
-* **Master 5-Layer Platform Architecture**: Single unified end-to-end architecture diagram integrating Edge Traffic, Shared CI/CD, EKS Compute, Isolated Database Tier, and Central Security/Observability.
-* **Unified Cloud Platform SRE & DevSecOps Governance**: Combined operational ownership under a single Cloud Platform SRE & DevSecOps engineering team in Section 10.
-* **Normalized 4 Enterprise Financial Scenarios**: Standardized 4-scenario financial breakdown (Scenarios 1 through 4) covering Non-Prod, Prod Baseline, Prod Enhanced HA, and Cross-Region DR.
-* **Categorized LLD Execution Target Matrix**: Clear 3-group architectural classification separating **EKS Pod Workloads**, **AWS Managed Services**, and **Standalone EC2 Instances**.
-* **Managed EKS Engine with Karpenter**: Amazon EKS (`v1.30+`) control plane combined with Karpenter Just-in-Time node autoscaling, enabling node provisioning in under 60 seconds (`ADR-003`, `ADR-005`).
-* **Hybrid Overlay CI/CD Model**: Secure multi-tool deployment workflow integrating GitLab source control, Jenkins container CI scanning (Trivy), Ansible configuration playbooks, and ArgoCD GitOps cluster synchronization (`ADR-004`).
-* **Zero Static Credentials**: Enforced IAM Roles for Service Accounts (IRSA) with OIDC federation and AWS Secrets Manager integration via External Secrets Operator (`ADR-011`).
+**项目标识符**：`datablue-nextgen-infra-platform`  
+**文档版本**：2.5 (统一 SRE 与 DevSecOps RACI 建议书)  
+**治理标准**：架构优先治理标准 (Architecture-First Governance Standard)
 
 ---
 
-## 2. Project Context & Requirement Baseline
+## 1. 执行摘要
 
-The system requirements have been normalized into standardized requirement taxonomies (`BUS`, `FUN`, `NFR`, `SEC`, `OPS`, `CST`) in [`REQUIREMENTS-REGISTER.md`](01-requirements/REQUIREMENTS-REGISTER.md):
+本建议书阐述了构建 **DataBlue 新一代基础设施平台** (`datablue-nextgen-infra-platform`) 的完整技术、运维与财务规范。
+
+客户需求构建一套企业级云原生 Kubernetes 平台，用于承载涵盖 **5 至 6 个业务系统** 的约 **40 个微服务**，具备 **测试** 与 **生产** 环境之间的严格隔离、基于 GitLab、Jenkins 和 Ansible 的自动化 CI/CD 部署流水线，以及稳健的中间件基础设施（MySQL、RabbitMQ、MongoDB、Redis 和 Nacos）。
+
+### 核心架构亮点
+* **多账号 Landing Zone**：在测试账号、生产账号、共享服务账号和安全账号之间实现物理账号隔离 (`ADR-001`, `ADR-002`)。
+* **Master 5 层平台架构**：统一的端到端总体架构图，集成边缘流量、共享 CI/CD、EKS 计算、隔离数据库层以及中央安全与可观测性体系。
+* **统一云平台 SRE 与 DevSecOps 治理**：在第 10 节中将运维所有权归口于统一的云平台 SRE 与 DevSecOps 工程团队。
+* **5 种规范化企业财务场景**：标准化 5 场景财务拆解（场景 1 至场景 5），全面涵盖非生产、生产基线、生产高可用、跨区域灾备及企业级多账号隔离。
+* **分类 LLD 执行目标矩阵**：清晰的三组架构分类，明确区分 **EKS Pod 负载**、**AWS 托管服务** 和 **独立 EC2 实例**。
+* **基于 Karpenter 的托管 EKS 引擎**：Amazon EKS (`v1.30+`) 控制平面结合 Karpenter JIT 节点自动弹性伸缩，实现在 60 秒内快速扩容节点 (`ADR-003`, `ADR-005`)。
+* **混合 CI/CD 部署模型**：集成了 GitLab 源码控制、Jenkins 容器扫描 (Trivy)、Ansible 配置剧本和 ArgoCD GitOps 集群同步的安全多工具部署工作流 (`ADR-004`)。
+* **零静态凭据**：通过与 OIDC 联合的 IAM Roles for Service Accounts (IRSA) 以及基于 External Secrets Operator 的 AWS Secrets Manager 集成，强制实现安全认证 (`ADR-011`)。
+
+---
+
+## 2. 项目背景与需求基线
+
+系统需求已规范化归类为标准需求分类法（`BUS`、`FUN`、`NFR`、`SEC`、`OPS`、`CST`），详见需求寄存器文件：
 
 ```mermaid
 graph TD
@@ -41,10 +41,10 @@ graph TD
 
 ---
 
-## 3. Master End-to-End 5-Layer Platform Architecture
+## 3. 总体 Master 端到端 5 层平台架构
 
-### 3.1 Unified Master Architecture Diagram
-The master diagram below unifies the entire AWS cloud platform across all 5 architectural layers:
+### 3.1 统一 Master 架构图
+以下总体架构图统一展示了跨越所有 5 个架构层的完整 AWS 云平台：
 
 ```mermaid
 flowchart TB
@@ -100,9 +100,9 @@ flowchart TB
 
 ---
 
-### 3.2 Master System Interaction & Flow Matrix
+### 3.2 Master 系统交互与流量矩阵
 
-| Flow Category | Origin / Trigger | Intermediate Path & Processing | Destination / Target | Security & Resiliency Mechanisms |
+| 流量类别 | 起源 / 触发条件 | 中间路径与处理流程 | 目标 / 终点 | 安全与弹性机制 |
 | :--- | :--- | :--- | :--- | :--- |
 | **1. User Request Flow** | External Web / Mobile Client | Cloudflare DNS → Cloudflare CDN → Cloudflare WAF → Public ALB → ALB Ingress Controller | 40 Microservice Pods (Private Subnet) | Guarded by Cloudflare WAF OWASP rules; TLS 1.3 encryption in transit |
 | **2. CI/CD Deployment Flow** | Developer Commit / MR | GitLab → Jenkins Master → Dynamic Worker (Trivy Scan) → ECR → Ansible | GitOps Repo → ArgoCD → EKS Pod Deployment | Zero static credentials; short-lived OIDC tokens via IRSA |
@@ -323,10 +323,10 @@ graph TD
 
 ---
 
-### 9.1 Scenario 1: Standard Test Environment — RECOMMENDED NON-PROD (`~$1,600 – $2,400 / month`)
+### 9.1 场景 1：标准测试环境 — 非生产环境推荐 (`~$1,600 – $2,400 / 月`)
 * **Objective**: 2-AZ High-Availability Non-Production Environment with Karpenter Autoscaling, Dedicated CI/CD & Managed Services.
 
-![Scenario 1 Cost Architecture Diagram](../../assets/scenario-1.png)
+![Scenario 1 Cost Architecture Diagram](../assets/scenario-1.png)
 *Figure 9.1: Scenario 1 Architecture Diagram — Standard Test Environment ($1,600 – $2,400 / month).*
 
 ```mermaid
@@ -445,10 +445,10 @@ flowchart TB
 
 ---
 
-### 9.2 Scenario 2: Production Baseline Environment — RECOMMENDED PROD (`~$4,200 – $6,100 / month`)
+### 9.2 场景 2：生产基线环境 — 生产环境推荐 (`~$4,200 – $6,100 / 月`)
 * **Objective**: 3-AZ Enterprise Production Environment with Compute Savings Plans, Enterprise CI/CD & Full Observability Stack.
 
-![Scenario 2 Cost Architecture Diagram](../../assets/scenario-2.png)
+![Scenario 2 Cost Architecture Diagram](../assets/scenario-2.png)
 *Figure 9.2: Scenario 2 Architecture Diagram — Production Baseline Environment ($4,200 – $6,100 / month).*
 
 ```mermaid
@@ -511,9 +511,9 @@ flowchart TB
 
 ---
 
-### 9.3 Scenario 3: Production Enhanced High Availability (`~$7,200 – $10,500 / month`)
+### 9.3 场景 3：生产高并发高可用环境 (`~$7,200 – $10,500 / 月`)
 
-![Scenario 3 Cost Architecture Diagram](../../assets/scenario-3.png)
+![Scenario 3 Cost Architecture Diagram](../assets/scenario-3.png)
 *Figure 9.3: Scenario 3 Architecture Diagram — Production Enhanced High Availability ($7,200 – $10,500 / month).*
 
 * **Objective**: High-Throughput 3-AZ Production Environment with Amazon Aurora, HA CI/CD Cluster & Full Security Audit Stack.
@@ -577,9 +577,9 @@ flowchart TB
 
 ---
 
-### 9.4 Scenario 4: Production with Cross-Region Disaster Recovery (`~$10,000 – $14,800 / month`)
+### 9.4 场景 4：生产跨区域灾难恢复环境 (`~$10,000 – $14,800 / 月`)
 
-![Scenario 4 Cost Architecture Diagram](../../assets/scenario-4.png)
+![Scenario 4 Cost Architecture Diagram](../assets/scenario-4.png)
 *Figure 9.4: Scenario 4 Architecture Diagram — Production Cross-Region Disaster Recovery ($10,000 – $14,800 / month).*
 
 * **Objective**: Primary Region Production + Secondary Region Pilot Light Disaster Recovery (RTO < 4h, RPO < 15m).
@@ -625,10 +625,10 @@ flowchart TB
 
 ---
 
-### 9.5 Scenario 5: Enterprise Multi-Account Isolation Architecture (`~$12,000 – $18,500 / month`)
+### 9.5 场景 5：企业级多账号隔离架构 (`~$12,000 – $18,500 / 月`)
 * **Objective**: 5-Account AWS Landing Zone Isolation Model with Dual Entry Reverse Proxies (Entry A / Entry B), AWS Transit Gateway Hub, Production Core, Shared Services & Strictly Isolated Dev/Test Account.
 
-![Scenario 5 Cost Architecture Diagram](../../assets/scenario-5.png)
+![Scenario 5 Cost Architecture Diagram](../assets/scenario-5.png)
 *Figure 9.5: Scenario 5 Architecture Diagram — Enterprise Multi-Account Isolation Architecture ($12,000 – $18,500 / month).*
 
 ```mermaid
@@ -696,55 +696,55 @@ flowchart TB
 | **Account 5: Shared Services Account** | Centralized GitLab, Jenkins, Nexus, ECR Registry, ArgoCD, Secrets Manager, Observability | Private Traffic Connection to Account 1 & Account 4; ZERO Internet Ingress | $800 – $1,200 / month |
 | **Estimated Total Spend** | **Enterprise Multi-Account Isolation Architecture** | **Strict Multi-Account Landing Zone Isolation** | **~$12,000 – $18,500 / month** |
 
-#### 9.5.1 Detailed 12 Connectivity Flows & Security Boundary Rules:
+#### 9.5.1 详细 12 条连接流与安全边界规则：
 
-1. **Edge Ingress Perimeter (Cloudflare Enterprise Edge)**: `Internet` $\rightarrow$ `HTTPS TLS 1.3` $\rightarrow$ `Cloudflare DNS / CDN / WAF`. Cloudflare distributes traffic via Geo-Routing / GTM Load Balancing to Account 2 (Prod Entry A), Account 3 (Prod Entry B), or Account 4 (Dev/Test Entry). Strictly zero direct connection from the Internet to Production Core Account 1.
-2. **Production Entry A Ingress Tier (Account 2)**: `Cloudflare` $\rightarrow$ `Internet Gateway` $\rightarrow$ `Public ALB` $\rightarrow$ `ECS / Nginx Reverse Proxy` $\rightarrow$ `Transit Gateway Attachment`. Reverse Proxy performs TLS termination, header validation, and request forwarding ONLY. Contains no application code and no databases.
-3. **Production Entry B Ingress Tier (Account 3)**: `Cloudflare` $\rightarrow$ `Internet Gateway` $\rightarrow$ `Public ALB` $\rightarrow$ `ECS / Nginx Reverse Proxy` $\rightarrow$ `Transit Gateway Attachment`. Functions as Active-Active or Active-Standby redundancy for Entry A. Contains no application code and no databases.
-4. **AWS Transit Gateway Network Routing Hub**: Transit Gateway attaches ONLY: **Account 2 (Entry A)** $\leftrightarrow$ **Account 1 (Prod Core)** $\leftrightarrow$ **Account 3 (Entry B)**. Prohibited attachment for Account 4 (Dev/Test) and Account 5 (Shared Services) for absolute network security isolation.
+1. **边界入口防护层 (Cloudflare Enterprise Edge)**：`互联网` $\rightarrow$ `HTTPS TLS 1.3` $\rightarrow$ `Cloudflare DNS / CDN / WAF`。Cloudflare 通过地理路由 / GTM 负载均衡将流量分发至账号 2 (生产入口 A)、账号 3 (生产入口 B) 或账号 4 (开发/测试入口)。严格禁止从互联网直接连接到生产核心账号 1。
+2. **生产入口 A 进栈层 (账号 2)**：`Cloudflare` $\rightarrow$ `Internet Gateway` $\rightarrow$ `Public ALB` $\rightarrow$ `ECS / Nginx 反向代理` $\rightarrow$ `Transit Gateway Attachment`。反向代理仅执行 TLS 解密、Header 校验及请求转发。不包含任何应用代码或数据库。
+3. **生产入口 B 进栈层 (账号 3)**：`Cloudflare` $\rightarrow$ `Internet Gateway` $\rightarrow$ `Public ALB` $\rightarrow$ `ECS / Nginx 反向代理` $\rightarrow$ `Transit Gateway Attachment`。作为入口 A 的双活 (Active-Active) 或主备 (Active-Standby) 冗余。不包含任何应用代码或数据库。
+4. **AWS Transit Gateway 网络路由枢纽**：Transit Gateway 仅连接：**账号 2 (入口 A)** $\leftrightarrow$ **账号 1 (生产核心)** $\leftrightarrow$ **账号 3 (入口 B)**。禁止连接账号 4 (开发/测试) 和账号 5 (共享服务)，以实现绝对的网络安全隔离。
 5. **Production Core Account Internal Traffic Flow (Account 1)**: `AWS Transit Gateway` $\rightarrow$ `AWS Load Balancer Controller` $\rightarrow$ `EKS Ingress` $\rightarrow$ `40 Microservice Pods` $\rightarrow$ `Nacos Service Discovery` $\rightarrow$ `Stateful Databases` (`RDS MySQL`, `ElastiCache Redis`, `RabbitMQ`, `DocumentDB`).
-6. **Production Core $\rightarrow$ Shared Services Private Connection**: Account 1 (Prod Core) connects to Account 5 (Shared Services) ONLY via private connections (AWS PrivateLink / Private VPC Connection): ArgoCD (GitOps Sync), Jenkins (Push ECR), GitLab (Webhook), Nexus (Dependencies), External Secrets Operator (ESO Secrets), Prometheus Federation (Metrics).
-7. **Shared Services Account Security Principles (Account 5)**: **Zero Internet Ingress**. Account 5 receives ZERO traffic directly from the Internet. Accepts Private Traffic ONLY via internal private networks from developers and CI/CD build agents.
-8. **Dev/Test Independent Environment Flow (Account 4)**: `Cloudflare` $\rightarrow$ `Internet Gateway` $\rightarrow$ `Public ALB` $\rightarrow$ `ECS / Nginx Reverse Proxy` $\rightarrow$ `Dev EKS Cluster` $\rightarrow$ `Dev Pods` $\rightarrow$ `Dev Databases`. This is a complete standalone infrastructure stack identical to Scenario 1 footprint.
-9. **Dev/Test Strict Isolation Matrix**: Account 4 Dev/Test: NO Transit Gateway Attachment, NO Production Core Connection, NO Production Database Access, NO Production VPC Peering.
-10. **Shared Services Build & Deployment Workflow**: `Developer` $\rightarrow$ `GitLab Commit` $\rightarrow$ `Jenkins Webhook` $\rightarrow$ `Build & Test` $\rightarrow$ `Nexus Dependencies` $\rightarrow$ `Push ECR Image` $\rightarrow$ `ArgoCD Sync` $\rightarrow$ `Deploy EKS Prod (Account 1)` or `Deploy EKS Dev (Account 4)`.
-11. **Security & Observability Pipeline**: Logs (`Pods` $\rightarrow$ `Fluent Bit` $\rightarrow$ `OpenSearch` $\rightarrow$ `Grafana`), Metrics (`Pods` $\rightarrow$ `Prometheus` $\rightarrow$ `Grafana`), Secrets (`AWS Secrets Manager` $\rightarrow$ `ESO` $\rightarrow$ `Pods`).
-12. **End-to-End Traffic Summary Matrix**:
-    - **Production Traffic**: `Users` $\rightarrow$ `Cloudflare` $\rightarrow$ `Entry A / Entry B` $\rightarrow$ `AWS Transit Gateway` $\rightarrow$ `Production Core` $\rightarrow$ `Databases` $\leftarrow$ `Shared Services`.
-    - **Dev/Test Traffic**: `Users` $\rightarrow$ `Cloudflare` $\rightarrow$ `Dev/Test Entry` $\rightarrow$ `Dev/Test Core` (100% Isolated).
+6. **生产核心 $\rightarrow$ 共享服务私有连接**：账号 1 (生产核心) 仅通过私有连接 (AWS PrivateLink / 私有 VPC 连接) 连接到账号 5 (共享服务)：ArgoCD (GitOps 同步)、Jenkins (Push ECR)、GitLab (Webhook)、Nexus (依赖下载)、External Secrets Operator (ESO 密钥同步)、Prometheus 联合监控 (指标收集)。
+7. **共享服务账号安全原则 (账号 5)**：**零互联网入口 (Zero Internet Ingress)**。账号 5 不接收任何来自互联网的直接流量。仅接受来自开发者和 CI/CD 构建节点的内部私有网络流量。
+8. **开发/测试独立环境流量 (账号 4)**：`Cloudflare` $\rightarrow$ `Internet Gateway` $\rightarrow$ `Public ALB` $\rightarrow$ `ECS / Nginx 反向代理` $\rightarrow$ `Dev EKS 集群` $\rightarrow$ `Dev Pod` $\rightarrow$ `Dev 数据库`。这是一个完全独立的单体基础设施栈，架构规格与场景 1 一致。
+9. **开发/测试严格隔离矩阵**：账号 4 (开发/测试)：无 Transit Gateway 连接、无生产核心连接、无生产数据库访问、无生产 VPC Peering。
+10. **共享服务构建与部署工作流**：`开发者` $\rightarrow$ `GitLab 提交` $\rightarrow$ `Jenkins Webhook` $\rightarrow$ `构建与测试` $\rightarrow$ `Nexus 依赖下载` $\rightarrow$ `Push ECR 镜像` $\rightarrow$ `ArgoCD 同步` $\rightarrow$ `部署至 EKS 生产 (账号 1)` 或 `部署至 EKS 测试 (账号 4)`。
+11. **安全与可观测性流水线**：日志 (`Pod` $\rightarrow$ `Fluent Bit` $\rightarrow$ `OpenSearch` $\rightarrow$ `Grafana`)、指标 (`Pod` $\rightarrow$ `Prometheus` $\rightarrow$ `Grafana`)、密钥 (`AWS Secrets Manager` $\rightarrow$ `ESO` $\rightarrow$ `Pod`)。
+12. **端到端流量总结矩阵**：
+    - **生产流量**：`用户` $\rightarrow$ `Cloudflare` $\rightarrow$ `入口 A / 入口 B` $\rightarrow$ `AWS Transit Gateway` $\rightarrow$ `生产核心` $\rightarrow$ `数据库` $\leftarrow$ `共享服务`。
+    - **开发/测试流量**：`用户` $\rightarrow$ `Cloudflare` $\rightarrow$ `开发/测试入口` $\rightarrow$ `开发/测试核心` (100% 完全隔离)。
 
 ---
 
-## 10. Operational Model & Service Ownership
+## 10. 运维模型与服务所有权矩阵
 
 The operational governance ([`OPERATING-MODEL.md`](06-operations/OPERATING-MODEL.md)) establishes a unified RACI ownership matrix combining SRE, DevOps, and Security under a single **Cloud Platform SRE & DevSecOps Team**:
 
-| Operational Domain & Scope | Cloud Platform SRE & DevSecOps Team | Database Administration Team (DBA) | Application Development Teams (App Dev) | Enterprise Operations & Support (Ops) |
+| 运维领域与技术范围 | 云平台 SRE 与 DevSecOps 联合团队 | 数据库管理团队 (DBA) | 应用开发团队 (App Dev) | 企业运维与支持团队 (Ops) |
 | :--- | :--- | :--- | :--- | :--- |
-| **AWS Landing Zone & VPC Subnets** | **Accountable / Responsible** | Informed | Informed | Informed |
-| **EKS Control Plane & Worker Nodes** | **Accountable / Responsible** | Informed | Informed | Informed |
-| **CI/CD Pipelines & GitOps ArgoCD** | **Accountable / Responsible** | Informed | Consulted | Informed |
-| **Database & Stateful Tier (RDS/Redis/DocumentDB/RabbitMQ)**| Consulted | **Accountable / Responsible** | Consulted | Informed |
-| **Microservice Application Code & Pod Specs** | Consulted | Informed | **Accountable / Responsible** | Informed |
-| **Observability, Security Audit & Logging Pipeline** | **Accountable / Responsible** | Informed | Informed | Informed |
-| **24/7 Incident Response & Emergency Escalation** | **Accountable / Responsible** | Consulted | Consulted | **Responsible** |
+| **AWS Landing Zone & VPC 子网** | **最终负责 / 主责执行** | 知会通知 | 知会通知 | 知会通知 |
+| **EKS 控制平面 & Worker 节点** | **最终负责 / 主责执行** | 知会通知 | 知会通知 | 知会通知 |
+| **CI/CD 流水线 & GitOps ArgoCD** | **最终负责 / 主责执行** | 知会通知 | 咨询协作 | 知会通知 |
+| **数据库 & 有状态层 (RDS/Redis/DocumentDB/RabbitMQ)** | 咨询协作 | **最终负责 / 主责执行** | 咨询协作 | 知会通知 |
+| **微服务应用代码 & Pod Spec 规格** | 咨询协作 | 知会通知 | **最终负责 / 主责执行** | 知会通知 |
+| **可观测性、安全审计 & 日志流水线** | **最终负责 / 主责执行** | 知会通知 | 知会通知 | 知会通知 |
+| **24/7 故障响应 & 应急响应升级** | **最终负责 / 主责执行** | 咨询协作 | 咨询协作 | **主责执行** |
 
 ---
 
-## 11. Risk Management & Production Blockers
+## 11. 风险管理与生产阻碍项
 
-Prior to CAB approval (`GATE-07`) for provisioning `DataBlue-Prod-Account`, the following **5 Critical Production Blockers** must be resolved during Phase 0 & Phase 1:
+在获得 CAB 变更委员会批准 (`GATE-07`) 以为 `DataBlue-Prod-Account` 进行资源调配之前，必须在阶段 0 与阶段 1 期间解决以下 **5 个关键生产阻碍项**：
 
-1. **`RSK-UNC-001`**: Solicit and verify microservice CPU and Memory sizing profiles from application teams.
-2. **`RSK-DAT-001`**: Complete MongoDB wire-protocol query compatibility audit against Amazon DocumentDB.
-3. **`RSK-UNC-003`**: Secure formal business Product Owner sign-off on target RTO (< 4h) and RPO (< 15m) SLA metrics.
-4. **`RSK-SEC-003`**: Audit and verify Landing Zone multi-account boundary with zero cross-account VPC peering.
-5. **`RSK-SCL-001`**: Complete Technical Pilot load testing benchmark accepted at `GATE-06`.
+1. **`RSK-UNC-001`**：收集并验证应用团队提供的微服务 CPU 与内存资源规格分析文件。
+2. **`RSK-DAT-001`**：完成针对 Amazon DocumentDB 的 MongoDB 传输协议查询兼容性审计。
+3. **`RSK-UNC-003`**：取得业务产品负责人 (Product Owner) 对目标 RTO (< 4小时) 与 RPO (< 15分钟) SLA 指标的正式签署确认。
+4. **`RSK-SEC-003`**：审计并验证 Landing Zone 多账号边界，确保无跨账号 VPC Peering。
+5. **`RSK-SCL-001`**：完成在 `GATE-06` 评审通过的技术试点基准压力测试。
 
 ---
 
-## 12. Conclusion & Recommendation
+## 12. 结论与实施建议
 
-The **DataBlue Next-Gen Infrastructure Platform** proposal provides a fully traceable, defensible, and modular architecture designed for high availability, security, and financial predictability. 
+**DataBlue 新一代基础设施平台** 建议书提供了一套完全可追溯、安全稳健且模块化的架构，专为高可用性、高安全性及可预测的财务预算而设计。 
 
-We recommend approving **Stage 3 ADR Package** and authorizing **Phase 0 Evidence Collection** to resolve open workload profiling parameters and unblock Phase 1 AWS Landing Zone construction.
+我们建议批准 **第 3 阶段 ADR 决策包**，并授权启动 **阶段 0 证据收集 (Phase 0 Evidence Collection)**，以解决未决的工作负载规格参数，并为阶段 1 AWS Landing Zone 的构建解除阻碍。

@@ -39,3 +39,15 @@ flowchart TB
         Pods --> PromGraf["Prometheus & Grafana (100GB EBS + APM Metrics) ($160/mo)"]
         GuardDuty["AWS GuardDuty, AWS Config & X-Ray ($130/mo)"]
     end
+
+    classDef edge fill:#0284c7,stroke:#0369a1,stroke-width:2px,color:#ffffff;
+    classDef compute fill:#059669,stroke:#047857,stroke-width:2px,color:#ffffff;
+    classDef shared fill:#d97706,stroke:#b45309,stroke-width:2px,color:#ffffff;
+    classDef db fill:#7c3aed,stroke:#6d28d9,stroke-width:2px,color:#ffffff;
+    classDef obs fill:#1e293b,stroke:#0f172a,stroke-width:2px,color:#ffffff;
+
+    class Users,CF,IGW,PublicALB,NAT edge;
+    class EKSControl,IngressCtrl,Pods,Karpenter,Nacos compute;
+    class GitLab,Jenkins,JenkinsAgents,Ansible,ECR,ArgoCD shared;
+    class RDS,Redis,RabbitMQ,DocDB db;
+    class Secrets,KMS,FluentBit,OpenSearch,S3Glacier,PromGraf,GuardDuty obs;

@@ -21,11 +21,12 @@ All AI agents operating within this project must strictly adhere to **Architectu
 
 1. **Perimeter Edge Tier**: Always specify **Cloudflare Enterprise Edge (Cloudflare DNS, CDN, WAF & Global Traffic Manager GTM)** as the primary ingress security point preceding AWS Internet Gateways and Application Load Balancers (ALBs).
 2. **Unified Operational RACI Team**: Cloud Platform SRE, DevOps Engineering, and Cloud Security are merged into a single combined role: **Cloud Platform SRE & DevSecOps Team**.
-3. **Four Normalized Financial Scenarios**:
+3. **Five Normalized Financial Scenarios**:
    - **Scenario 1 (Standard Non-Prod Test Baseline)**: `~$1,600 – $2,400 / month` (2-AZ, 70% Spot / 30% On-Demand, Karpenter Autoscaling, Dedicated CI/CD).
    - **Scenario 2 (Production Baseline)**: `~$4,200 – $6,100 / month` (3-AZ, 3-Yr Savings Plans, Managed RDS MySQL, 2-Node OpenSearch).
    - **Scenario 3 (Production High-Scale HA)**: `~$7,200 – $10,500 / month` (3-AZ, Transit Gateway, Amazon Aurora MySQL 3 Replicas, Redis Sharded Cluster 6-Node, 4-Node OpenSearch).
    - **Scenario 4 (Production Cross-Region DR)**: `~$10,000 – $14,800 / month` (Multi-AZ Primary `us-east-1` + Standby Pilot Light `us-west-2`, Cloudflare GTM Failover with RTO < 4h, RPO < 15m).
+   - **Scenario 5 (Enterprise Multi-Account Isolation)**: `~$12,000 – $18,500 / month` (5-Account AWS Landing Zone Isolation, Dual Entry Reverse Proxies Entry A/B, Transit Gateway Hub, Prod Core, Shared Services, 100% Isolated Dev/Test).
 4. **Mermaid Diagrams Standard**: All system diagrams must be maintained in standalone `.mmd` files in `diagrams/src/` and compiled to SVG (`diagrams/svg/`) and PNG (`diagrams/png/`) using `python3 diagrams/render.py`. Implementation Roadmap (`Phase 0` to `Phase 10`) must use vertical orientation (`graph TD`).
 5. **No Destructive Cloud Operations**: Agents are **STRICTLY PROHIBITED** from executing destructive cloud commands (e.g. `terraform destroy`, `aws ec2 terminate-instances`, `aws s3 rb`, `aws eks delete-cluster`) without explicit written human authorization.
 

@@ -18,11 +18,12 @@ Tất cả các AI Agent hoạt động trong dự án này bắt buộc phải 
 
 1. **Tầng Vành đai Edge**: Luôn chỉ định **Cloudflare Enterprise Edge (Cloudflare DNS, CDN, WAF & Global Traffic Manager GTM)** làm điểm bảo mật và định tuyến chính đứng trước AWS Internet Gateways và Application Load Balancers (ALB).
 2. **Đội ngũ Quản trị Vận hành Hợp nhất**: Các vai trò Cloud Platform SRE, DevOps Engineering và Cloud Security được hợp nhất thành một đội ngũ duy nhất: **Cloud Platform SRE & DevSecOps Team**.
-3. **Bốn Kịch bản Tài chính Chuẩn hóa**:
+3. **Năm Kịch bản Tài chính Chuẩn hóa**:
    - **Kịch bản 1 (Test Tiêu chuẩn Non-Prod)**: `~$1,600 – $2,400 / tháng` (2-AZ, 70% Spot / 30% On-Demand, Karpenter Autoscaling, Stack CI/CD riêng).
    - **Kịch bản 2 (Production Cơ sở)**: `~$4,200 – $6,100 / tháng` (3-AZ, Savings Plans 3 năm, RDS MySQL Managed, OpenSearch 2-Node).
    - **Kịch bản 3 (Production Sẵn sàng Cao Nâng cao)**: `~$7,200 – $10,500 / tháng` (3-AZ, Transit Gateway, Amazon Aurora MySQL 3 Replicas, Redis Sharded Cluster 6-Node, OpenSearch 4-Node).
    - **Kịch bản 4 (Production Khôi phục Thảm họa Xuyên Vùng)**: `~$10,000 – $14,800 / tháng` (Primary `us-east-1` + Standby Pilot Light `us-west-2`, Cloudflare GTM Failover với SLA RTO < 4h, RPO < 15m).
+   - **Kịch bản 5 (Kiến trúc Đa Tài khoản Cô lập Doanh nghiệp)**: `~$12,000 – $18,500 / tháng` (Mô hình Cô lập 5 Tài khoản AWS Landing Zone, Reverse Proxies Kép Entry A/B, Transit Gateway Hub, Prod Core, Shared Services Stack, Dev/Test Cô lập 100%).
 4. **Tiêu chuẩn Sơ đồ Mermaid**: Tất cả các sơ đồ kiến trúc phải được quản lý dưới dạng file `.mmd` độc lập tại `diagrams/src/` và biên dịch ra SVG (`diagrams/svg/`) và PNG (`diagrams/png/`) bằng script `python3 diagrams/render.py`. Sơ đồ Lộ trình Triển khai (`Phase 0` đến `Phase 10`) phải sử dụng chiều dọc (`graph TD`).
 5. **Cấm các Thao tác Phá hủy Đám mây**: AI Agent **TUYỆT ĐỐI KHÔNG ĐƯỢC** thực thi các lệnh đám mây mang tính phá hủy (như `terraform destroy`, `aws ec2 terminate-instances`, `aws s3 rb`, `aws eks delete-cluster`) nếu không có văn bản phê duyệt trực tiếp của con người trong prompt context.
 

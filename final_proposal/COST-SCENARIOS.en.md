@@ -47,7 +47,7 @@ graph TD
 
 ### 4.1 Scenario 1 Architecture: Standard Test Environment
 
-![Scenario 1 Cost Architecture Diagram](../../../assets/scenario-1.png)
+![Scenario 1 Cost Architecture Diagram](../assets/scenario-1.png)
 *Figure 4.1: Scenario 1 Architecture Diagram — Standard Test Environment ($1,600 – $2,400 / month).*
 
 ```mermaid
@@ -154,7 +154,7 @@ flowchart TB
 
 ### 4.2 Scenario 2 Architecture: Production Baseline Environment
 
-![Scenario 2 Cost Architecture Diagram](../../../assets/scenario-2.png)
+![Scenario 2 Cost Architecture Diagram](../assets/scenario-2.png)
 *Figure 4.2: Scenario 2 Architecture Diagram — Production Baseline Environment ($4,200 – $6,100 / month).*
 
 ```mermaid
@@ -205,7 +205,7 @@ flowchart TB
 
 ### 4.3 Scenario 3 Architecture: Production Enhanced High Availability
 
-![Scenario 3 Cost Architecture Diagram](../../../assets/scenario-3.png)
+![Scenario 3 Cost Architecture Diagram](../assets/scenario-3.png)
 *Figure 4.3: Scenario 3 Architecture Diagram — Production Enhanced High Availability ($7,200 – $10,500 / month).*
 
 ```mermaid
@@ -255,7 +255,7 @@ flowchart TB
 
 ### 4.4 Scenario 4 Architecture: Production with Cross-Region DR
 
-![Scenario 4 Cost Architecture Diagram](../../../assets/scenario-4.png)
+![Scenario 4 Cost Architecture Diagram](../assets/scenario-4.png)
 *Figure 4.4: Scenario 4 Architecture Diagram — Production Cross-Region Disaster Recovery ($10,000 – $14,800 / month).*
 
 ```mermaid
@@ -293,7 +293,7 @@ flowchart TB
 
 ### 4.5 Scenario 5 Architecture: Enterprise Multi-Account Isolation Architecture
 
-![Scenario 5 Cost Architecture Diagram](../../../assets/scenario-5.png)
+![Scenario 5 Cost Architecture Diagram](../assets/scenario-5.png)
 *Figure 4.5: Scenario 5 Architecture Diagram — Enterprise Multi-Account Isolation Architecture ($12,000 – $18,500 / month).*
 
 ```mermaid

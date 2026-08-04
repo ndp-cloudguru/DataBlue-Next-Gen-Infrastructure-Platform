@@ -1,0 +1,72 @@
+flowchart TB
+    subgraph GlobalEdge["Global Edge & Ingress Layer (Cloudflare Enterprise Edge)"]
+        Users["External End Users & Mobile Clients"] -->|HTTPS TLS 1.3| CF["Cloudflare Global DNS / CDN / WAF<br/>Geo-Routing & GTM Load Balancing"]
+    end
+
+    subgraph EntryA["Account 2 — Production Entry A ($192/mo)"]
+        CF -->|Production Route A| IGW_A["AWS Internet Gateway (VPC 10.1.0.0/16)"]
+        IGW_A --> ALB_A["Public ALB ($33/mo)"]
+        ALB_A --> Proxy_A["ECS / Nginx Reverse Proxy ($60/mo)<br/>No App Logic / No Databases"]
+    end
+
+    subgraph EntryB["Account 3 — Production Entry B ($192/mo)"]
+        CF -->|Production Route B| IGW_B["AWS Internet Gateway (VPC 10.2.0.0/16)"]
+        IGW_B --> ALB_B["Public ALB ($33/mo)"]
+        ALB_B --> Proxy_B["ECS / Nginx Reverse Proxy ($60/mo)<br/>No App Logic / No Databases"]
+    end
+
+    subgraph TGWHub["AWS Transit Gateway Hub — Network Routing ($250/mo)"]
+        Proxy_A --> TGW["AWS Transit Gateway (TGW)<br/>Attaches Account 1, 2, 3 Only"]
+        Proxy_B --> TGW
+    end
+
+    subgraph ProdCore["Account 1 — Production Core Account ($5,200 - $8,500/mo)"]
+        TGW -->|Private TGW Route| CoreALB["AWS ALB Ingress Controller"]
+        CoreALB --> Ingress["EKS Ingress Layer"]
+        Ingress --> Pods["40 Microservice Pods (EKS Cluster v1.30+)"]
+        Pods --> Nacos["Nacos 3-Node Raft Cluster"]
+        Pods --> Redis["Amazon ElastiCache Redis Multi-AZ"]
+        Pods --> RabbitMQ["Amazon MQ RabbitMQ Quorum"]
+        Pods --> DocDB["Amazon DocumentDB Cluster"]
+        Pods --> RDS["Amazon RDS MySQL Multi-AZ"]
+    end
+
+    subgraph SharedServices["Account 5 — Shared Services Account ($800 - $1,200/mo)"]
+        GitLab["GitLab Enterprise Repository"] -->|Webhook| Jenkins["Jenkins CI Master & Spot Agents"]
+        Jenkins --> Nexus["Nexus Artifact Repository"]
+        Jenkins -->|Push Images| ECR["Amazon ECR Private Registry"]
+        ArgoCD["ArgoCD Operator"] -->|GitOps Sync via Private Link| Pods
+        ArgoCD -->|GitOps Sync via Private Link| DevPods
+        ESO["External Secrets Operator"] -->|Fetch Secrets via Private Link| Secrets["AWS Secrets Manager & KMS"]
+        Secrets --> Pods
+        PromGraf["Prometheus & Grafana"] -->|Federation Monitoring| Pods
+    end
+
+    subgraph DevTestAccount["Account 4 — Dev/Test Isolated Account ($1,600 - $2,400/mo) — NO TGW ATTACHMENT"]
+        CF -->|Dev/Test Route| DevIGW["AWS Internet Gateway (Dev VPC 10.100.0.0/16)"]
+        DevIGW --> DevALB["Dev/Test Public ALB"]
+        DevALB --> DevProxy["Dev ECS / Nginx Reverse Proxy"]
+        DevProxy --> DevEKS["Dev/Test EKS Cluster"]
+        DevEKS --> DevPods["Dev/Test 40 Pods"]
+        DevPods --> DevDB["Dev/Test Stateful Databases (RDS, Redis, MQ, DocDB)"]
+    end
+
+    subgraph Summary["Scenario 5 Budget & Isolation Summary"]
+        TotalCost["SCENARIO 5: MULTI-ACCOUNT ENTERPRISE ISOLATION ARCHITECTURE<br/>Estimated Total Spend: $12,000 – $18,500 / month<br/>Key Principle: Strict Account & VPC Isolation + Dual Ingress Reverse Proxies + Transit Gateway Core"]
+    end
+
+    classDef edge fill:#0284c7,stroke:#0369a1,stroke-width:2px,color:#ffffff;
+    classDef entry fill:#0d9488,stroke:#0f766e,stroke-width:2px,color:#ffffff;
+    classDef tgw fill:#7c3aed,stroke:#6d28d9,stroke-width:2px,color:#ffffff;
+    classDef core fill:#059669,stroke:#047857,stroke-width:2px,color:#ffffff;
+    classDef shared fill:#d97706,stroke:#b45309,stroke-width:2px,color:#ffffff;
+    classDef dev fill:#dc2626,stroke:#b91c1c,stroke-width:2px,color:#ffffff;
+    classDef summary fill:#1e293b,stroke:#0f172a,stroke-width:2px,color:#ffffff;
+
+    class Users,CF edge;
+    class IGW_A,ALB_A,Proxy_A,IGW_B,ALB_B,Proxy_B entry;
+    class TGW tgw;
+    class CoreALB,Ingress,Pods,Nacos,Redis,RabbitMQ,DocDB,RDS core;
+    class GitLab,Jenkins,Nexus,ECR,ArgoCD,ESO,Secrets,PromGraf shared;
+    class DevIGW,DevALB,DevProxy,DevEKS,DevPods,DevDB dev;
+    class TotalCost summary;

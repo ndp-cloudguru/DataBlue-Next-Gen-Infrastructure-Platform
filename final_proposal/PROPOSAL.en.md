@@ -326,7 +326,7 @@ graph TD
 ### 9.1 Scenario 1: Standard Test Environment — RECOMMENDED NON-PROD (`~$1,600 – $2,400 / month`)
 * **Objective**: 2-AZ High-Availability Non-Production Environment with Karpenter Autoscaling, Dedicated CI/CD & Managed Services.
 
-![Scenario 1 Cost Architecture Diagram](../../assets/scenario-1.png)
+![Scenario 1 Cost Architecture Diagram](../assets/scenario-1.png)
 *Figure 9.1: Scenario 1 Architecture Diagram — Standard Test Environment ($1,600 – $2,400 / month).*
 
 ```mermaid
@@ -448,7 +448,7 @@ flowchart TB
 ### 9.2 Scenario 2: Production Baseline Environment — RECOMMENDED PROD (`~$4,200 – $6,100 / month`)
 * **Objective**: 3-AZ Enterprise Production Environment with Compute Savings Plans, Enterprise CI/CD & Full Observability Stack.
 
-![Scenario 2 Cost Architecture Diagram](../../assets/scenario-2.png)
+![Scenario 2 Cost Architecture Diagram](../assets/scenario-2.png)
 *Figure 9.2: Scenario 2 Architecture Diagram — Production Baseline Environment ($4,200 – $6,100 / month).*
 
 ```mermaid
@@ -513,7 +513,7 @@ flowchart TB
 
 ### 9.3 Scenario 3: Production Enhanced High Availability (`~$7,200 – $10,500 / month`)
 
-![Scenario 3 Cost Architecture Diagram](../../assets/scenario-3.png)
+![Scenario 3 Cost Architecture Diagram](../assets/scenario-3.png)
 *Figure 9.3: Scenario 3 Architecture Diagram — Production Enhanced High Availability ($7,200 – $10,500 / month).*
 
 * **Objective**: High-Throughput 3-AZ Production Environment with Amazon Aurora, HA CI/CD Cluster & Full Security Audit Stack.
@@ -579,7 +579,7 @@ flowchart TB
 
 ### 9.4 Scenario 4: Production with Cross-Region Disaster Recovery (`~$10,000 – $14,800 / month`)
 
-![Scenario 4 Cost Architecture Diagram](../../assets/scenario-4.png)
+![Scenario 4 Cost Architecture Diagram](../assets/scenario-4.png)
 *Figure 9.4: Scenario 4 Architecture Diagram — Production Cross-Region Disaster Recovery ($10,000 – $14,800 / month).*
 
 * **Objective**: Primary Region Production + Secondary Region Pilot Light Disaster Recovery (RTO < 4h, RPO < 15m).
@@ -628,7 +628,7 @@ flowchart TB
 ### 9.5 Scenario 5: Enterprise Multi-Account Isolation Architecture (`~$12,000 – $18,500 / month`)
 * **Objective**: 5-Account AWS Landing Zone Isolation Model with Dual Entry Reverse Proxies (Entry A / Entry B), AWS Transit Gateway Hub, Production Core, Shared Services & Strictly Isolated Dev/Test Account.
 
-![Scenario 5 Cost Architecture Diagram](../../assets/scenario-5.png)
+![Scenario 5 Cost Architecture Diagram](../assets/scenario-5.png)
 *Figure 9.5: Scenario 5 Architecture Diagram — Enterprise Multi-Account Isolation Architecture ($12,000 – $18,500 / month).*
 
 ```mermaid

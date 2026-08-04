@@ -414,6 +414,6 @@ The total monthly budget for Scenario 5 depends on the selected Core Infrastruct
     - **Metrics**: `Pods` $\rightarrow$ `Prometheus` $\rightarrow$ `Grafana`.
     - **Secrets**: `AWS Secrets Manager` $\rightarrow$ `External Secrets Operator (ESO)` $\rightarrow$ `Pods`.
 
-12. **End-to-End Traffic Summary Matrix**:
-    - **Production Traffic**: `Users` $\rightarrow$ `Cloudflare` $\rightarrow$ `Entry A / Entry B` $\rightarrow$ `AWS Transit Gateway` $\rightarrow$ `Production Core` $\rightarrow$ `Databases` $\leftarrow$ `Shared Services`.
-    - **Dev/Test Traffic**: `Users` $\rightarrow$ `Cloudflare` $\rightarrow$ `Dev/Test Entry` $\rightarrow$ `Dev/Test Core` (100% Isolated).
+12. **端到端流量总结矩阵**：
+    - **生产流量**：`用户` $\rightarrow$ `Cloudflare` $\rightarrow$ `入口 A / 入口 B` $\rightarrow$ `AWS Transit Gateway` $\rightarrow$ `生产核心` $\rightarrow$ `数据库` $\leftarrow$ `共享服务`。
+    - **开发/测试流量**：`用户` $\rightarrow$ `Cloudflare` $\rightarrow$ `开发/测试入口` $\rightarrow$ `开发/测试核心` (100% 完全隔离)。

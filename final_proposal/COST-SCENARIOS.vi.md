@@ -47,7 +47,7 @@ graph TD
 
 ### 4.1 Kiến trúc Kịch bản 1: Môi trường Test Tiêu chuẩn (Non-Prod)
 
-![Sơ đồ Kiến trúc Chi phí Kịch bản 1](../../../assets/scenario-1.png)
+![Sơ đồ Kiến trúc Chi phí Kịch bản 1](../assets/scenario-1.png)
 *Hình 4.1: Sơ đồ Kiến trúc Kịch bản 1 — Môi trường Test Tiêu chuẩn ($1,600 – $2,400 / tháng).*
 
 ```mermaid
@@ -154,7 +154,7 @@ flowchart TB
 
 ### 4.2 Kiến trúc Kịch bản 2: Môi trường Production Cơ sở
 
-![Sơ đồ Kiến trúc Chi phí Kịch bản 2](../../../assets/scenario-2.png)
+![Sơ đồ Kiến trúc Chi phí Kịch bản 2](../assets/scenario-2.png)
 *Hình 4.2: Sơ đồ Kiến trúc Kịch bản 2 — Môi trường Production Cơ sở ($4,200 – $6,100 / tháng).*
 
 ```mermaid
@@ -205,7 +205,7 @@ flowchart TB
 
 ### 4.3 Kiến trúc Kịch bản 3: Production Sẵn sàng Cao Nâng cao
 
-![Sơ đồ Kiến trúc Chi phí Kịch bản 3](../../../assets/scenario-3.png)
+![Sơ đồ Kiến trúc Chi phí Kịch bản 3](../assets/scenario-3.png)
 *Hình 4.3: Sơ đồ Kiến trúc Kịch bản 3 — Production Sẵn sàng Cao Nâng cao ($7,200 – $10,500 / tháng).*
 
 ```mermaid
@@ -255,7 +255,7 @@ flowchart TB
 
 ### 4.4 Kiến trúc Kịch bản 4: Production có Khôi phục Thảm họa Xuyên Vùng
 
-![Sơ đồ Kiến trúc Chi phí Kịch bản 4](../../../assets/scenario-4.png)
+![Sơ đồ Kiến trúc Chi phí Kịch bản 4](../assets/scenario-4.png)
 *Hình 4.4: Sơ đồ Kiến trúc Kịch bản 4 — Production Khôi phục Thảm họa Xuyên Vùng ($10,000 – $14,800 / tháng).*
 
 ```mermaid
@@ -293,7 +293,7 @@ flowchart TB
 
 ### 4.5 Kiến trúc Kịch bản 5: Kiến trúc Đa Tài khoản Cô lập Doanh nghiệp (Enterprise Multi-Account Isolation)
 
-![Sơ đồ Kiến trúc Chi phí Kịch bản 5](../../../assets/scenario-5.png)
+![Sơ đồ Kiến trúc Chi phí Kịch bản 5](../assets/scenario-5.png)
 *Hình 4.5: Sơ đồ Kiến trúc Kịch bản 5 — Kiến trúc Đa Tài khoản Cô lập Doanh nghiệp ($12,000 – $18,500 / tháng).*
 
 ```mermaid

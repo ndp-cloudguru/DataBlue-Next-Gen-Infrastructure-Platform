@@ -26,3 +26,13 @@ flowchart TB
         DREKS --> DROS["Standby OpenSearch Mirror Node"]
         DREKS --> DRS3["Secondary Region S3 Backup Vault Lock ($900 - $1,500/mo)"]
     end
+
+    classDef edge fill:#0284c7,stroke:#0369a1,stroke-width:2px,color:#ffffff;
+    classDef primary fill:#059669,stroke:#047857,stroke-width:2px,color:#ffffff;
+    classDef sync fill:#7c3aed,stroke:#6d28d9,stroke-width:2px,color:#ffffff;
+    classDef secondary fill:#dc2626,stroke:#b91c1c,stroke-width:2px,color:#ffffff;
+
+    class Users,GTM edge;
+    class PrimALB,PrimEKS,PrimRDS,PrimRedis,PrimDocDB,PrimOS,PrimS3 primary;
+    class PrimECR,DRECR sync;
+    class DRALB,DREKS,DRRDS,DROS,DRS3 secondary;
