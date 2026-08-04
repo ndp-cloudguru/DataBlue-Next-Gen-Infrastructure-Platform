@@ -1,0 +1,14 @@
+graph TD
+    subgraph SecretsInjection["Dynamic Secrets Injection Subsystem"]
+        ESO["External Secrets Operator ESO Pod"] --> AWSSecrets["AWS Secrets Manager Security Account"]
+        ESO --> K8sSecret["Kubernetes Secret Asset"]
+        K8sSecret --> AppPod["Application Microservice Pod"]
+    end
+
+    subgraph ManagedDatabases["Multi-AZ Stateful Database Subsystem"]
+        AppPod --> RDSPrimary["RDS MySQL Primary Node AZ-a"]
+        RDSPrimary --> RDSStandby["RDS MySQL Standby Node AZ-b"]
+        AppPod --> RedisRepl["ElastiCache Redis Primary and Replica"]
+        AppPod --> RabbitBroker["Amazon MQ RabbitMQ Quorum Cluster"]
+        AppPod --> DocDBCluster["Amazon DocumentDB 3-Node Cluster"]
+    end

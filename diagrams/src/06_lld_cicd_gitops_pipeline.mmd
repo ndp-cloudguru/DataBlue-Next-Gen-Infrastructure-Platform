@@ -1,0 +1,17 @@
+graph TD
+    Dev["Software Developer"] --> GitLab["GitLab Enterprise Shared Services EC2"]
+    GitLab --> Jenkins["Jenkins CI Master Shared Services EC2"]
+
+    subgraph CIExecution["CI Build and Security Pipeline"]
+        Jenkins --> Worker["Dynamic Jenkins Agent EC2 Spot"]
+        Worker --> Build["Docker Image Build"]
+        Worker --> Trivy["Trivy Vulnerability Scanner"]
+        Trivy --> ECR["Amazon ECR Registry"]
+    end
+
+    subgraph CDExecution["CD and GitOps Synchronization"]
+        Jenkins --> Ansible["Ansible Control Engine"]
+        Ansible --> GitRepo["GitOps Manifest Repository"]
+        GitRepo --> ArgoCD["ArgoCD Controller EKS Pod"]
+        ArgoCD --> EKS["Amazon EKS Cluster Pods Deployment"]
+    end

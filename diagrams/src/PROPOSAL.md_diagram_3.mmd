@@ -1,0 +1,14 @@
+graph TD
+    Client["Client HTTP Request"] --> ALB["AWS Application Load Balancer Public Subnet"]
+    ALB --> Service["Kubernetes ClusterIP Service"]
+    Service --> Pod1["Microservice Pod Replica 1"]
+    Service --> Pod2["Microservice Pod Replica 2"]
+
+    subgraph ScalingEngine["Dynamic Pod and Worker Scaling Engine"]
+        HPA["Horizontal Pod Autoscaler HPA"] --> MetricsServer["Metrics Server CPU Target 70%"]
+        MetricsServer --> HPA
+        HPA --> Pod3["Microservice Pod Replica N"]
+        Pod3 --> Karpenter["Karpenter Autoscaler Controller"]
+        Karpenter --> EC2["EC2 Worker Node m6g/c6g Spot/Savings"]
+        EC2 --> Pod3
+    end

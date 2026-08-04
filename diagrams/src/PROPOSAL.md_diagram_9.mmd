@@ -1,0 +1,97 @@
+flowchart TB
+    subgraph Edge["Perimeter Edge & Traffic Ingress Tier"]
+        Users["External Users, QA Team & Mobile Clients"]
+        CF["Cloudflare DNS, CDN & WAF"]
+        IGW["AWS Internet Gateway<br/>Test VPC 10.100.0.0/16"]
+        PublicALB["Public Application Load Balancer<br/>2 AZs<br/>Public Subnets 10.100.1.0/24 & 10.100.2.0/24"]
+        NAT["2 NAT Gateways<br/>Outbound Egress"]
+
+        Users -->|HTTPS TLS 1.3| CF
+        CF --> IGW
+        IGW --> PublicALB
+    end
+
+    subgraph ComputeTier["EKS Test/UAT Compute Tier — Private App Subnets 10.100.10.0/24 & 10.100.20.0/24"]
+        EKSControl["Amazon EKS Managed Control Plane v1.30+"]
+        IngressCtrl["AWS Load Balancer Controller"]
+        Pods["40 Microservice Pods<br/>XS-S Specs<br/>HPA 70% CPU<br/>TopologySpread Across 2 AZs"]
+        Karpenter["Karpenter JIT Autoscaler<br/>~8 Nodes<br/>70% Spot / 30% On-Demand<br/>m6g.large"]
+        Nacos["Nacos 3-Node Raft Cluster<br/>StatefulSet Across 2 AZs"]
+        ESO["External Secrets Operator"]
+        TestJobs["Automated Test Jobs<br/>Smoke, Integration & Regression"]
+
+        PublicALB --> IngressCtrl
+        IngressCtrl --> Pods
+        Karpenter --> Pods
+        Pods --> Nacos
+        ESO --> Pods
+        TestJobs -->|API & Functional Tests| Pods
+    end
+
+    subgraph CICDTier["Shared CI/CD & GitOps Toolchain — VPC 10.200.0.0/16"]
+        GitLab["GitLab Enterprise<br/>Application Source Repository"]
+        Jenkins["Jenkins Controller"]
+        JenkinsAgents["Dynamic Jenkins Spot Workers"]
+        ECR["Amazon ECR Private Registry"]
+        GitOpsRepo["GitOps Repository<br/>Helm Values / Kustomize Manifests"]
+        ArgoCD["ArgoCD<br/>Single-Instance Test Deployment"]
+        Ansible["Ansible Control Host<br/>Infrastructure Automation Only"]
+        Approval["QA / UAT Approval Gate"]
+
+        GitLab -->|Webhook| Jenkins
+        Jenkins --> JenkinsAgents
+        JenkinsAgents -->|Unit Test, Build, SAST, SCA, Trivy Scan| ECR
+        JenkinsAgents -->|Update Image Digest / Tag| GitOpsRepo
+        GitOpsRepo --> Approval
+        Approval -->|Approved Merge| GitOpsRepo
+        GitOpsRepo -->|Watch Desired State| ArgoCD
+        ArgoCD -->|Sync via Kubernetes API| EKSControl
+        EKSControl --> Pods
+
+        Jenkins -->|Run Infrastructure Playbooks| Ansible
+    end
+
+    subgraph DatabaseTier["Isolated Database Tier — Zero-Internet Subnets 10.100.100.0/24 & 10.100.200.0/24"]
+        RDS["RDS MySQL<br/>db.m6g.large Multi-AZ"]
+        Redis["ElastiCache Redis<br/>cache.t4g.medium 2-Node"]
+        RabbitMQ["Amazon MQ RabbitMQ<br/>mq.t3.micro Multi-AZ"]
+        DocDB["Amazon DocumentDB<br/>db.t4g.medium 2-Node"]
+
+        Pods -->|MySQL TLS| RDS
+        Pods -->|Redis TLS| Redis
+        Pods -->|AMQPS| RabbitMQ
+        Pods -->|MongoDB TLS| DocDB
+    end
+
+    subgraph SecurityTier["Security & Secrets Management"]
+        Secrets["AWS Secrets Manager"]
+        KMS["AWS KMS Customer Managed Keys"]
+        WAFLogs["Cloudflare & ALB Access Logs"]
+
+        Secrets --> ESO
+        KMS --> Secrets
+        KMS --> RDS
+        KMS --> Redis
+        KMS --> ECR
+        CF --> WAFLogs
+        PublicALB --> WAFLogs
+    end
+
+    subgraph ObservabilityTier["Observability & Security Stack — VPC 10.300.0.0/16"]
+        FluentBit["Fluent Bit DaemonSet"]
+        OpenSearch["Amazon OpenSearch<br/>Single-Node Test Cluster"]
+        S3["Amazon S3<br/>Velero Backup & Log Archive"]
+        Prom["Prometheus & Grafana<br/>50GB EBS"]
+        CW["CloudWatch, GuardDuty & AWS Config"]
+        Notifications["Alert Notifications<br/>Email / Slack / Telegram"]
+
+        Pods --> FluentBit
+        FluentBit --> OpenSearch
+        FluentBit --> S3
+        Pods --> Prom
+        EKSControl --> CW
+        RDS --> CW
+        PublicALB --> CW
+        Prom --> Notifications
+        CW --> Notifications
+    end

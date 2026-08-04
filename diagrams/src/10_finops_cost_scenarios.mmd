@@ -1,0 +1,9 @@
+graph TD
+    Scen1["SCENARIO 1 Standard Test Environment RECOMMENDED NON PROD<br/>1600 to 2400 per month"]
+    Scen2["SCENARIO 2 Production Baseline Environment RECOMMENDED PROD<br/>4200 to 6100 per month"]
+    Scen3["SCENARIO 3 Production Enhanced High Availability<br/>7200 to 10500 per month"]
+    Scen4["SCENARIO 4 Production with Cross Region Disaster Recovery<br/>10000 to 14800 per month"]
+
+    Scen1 --> Scen2
+    Scen2 --> Scen3
+    Scen3 --> Scen4

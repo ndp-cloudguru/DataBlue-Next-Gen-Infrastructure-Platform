@@ -1,0 +1,40 @@
+flowchart TB
+    subgraph Edge["Perimeter Edge & Traffic Ingress Tier (Public Subnets 10.100.1.0/24 & 10.100.2.0/24 - $172/mo)"]
+        Users["External Users & QA Test Clients"] -->|HTTPS TLS 1.3| CF["Cloudflare DNS, CDN & WAF ($0/mo)"]
+        CF --> IGW["AWS Internet Gateway (Test VPC 10.100.0.0/16)"]
+        IGW --> PublicALB["Public Application Load Balancer 2 AZs ($33/mo)"]
+        NAT["2 NAT Gateways (AZ-a, AZ-b Outbound Egress $139/mo)"]
+    end
+
+    subgraph ComputeTier["EKS Test/UAT Compute Tier (Private App Subnets 10.100.10.0/24 & 10.100.20.0/24 - $630/mo)"]
+        EKSControl["Amazon EKS Managed Control Plane v1.30+ ($73/mo)"]
+        PublicALB --> IngressCtrl["AWS ALB Ingress Controller"]
+        IngressCtrl --> Pods["40 Microservice Pods (XS-S Specs, HPA 70% CPU Across 2 AZs)"]
+        Karpenter["Karpenter JIT Autoscaler (~8 Nodes m6g.large 70% Spot / 30% On-Demand $487/mo)"] --> Pods
+        Pods --> Nacos["Nacos 3-Node Raft Cluster (StatefulSet Across 2 AZs $70/mo)"]
+    end
+
+    subgraph SharedServices["Shared CI/CD & GitOps Toolchain Account (VPC 10.200.0.0/16 - $264/mo)"]
+        GitLab["GitLab Enterprise EC2 t4g.xlarge ($67/mo)"]
+        Jenkins["Jenkins Controller EC2 t4g.large ($34/mo)"]
+        JenkinsAgents["Dynamic Jenkins Spot Workers ($20/mo)"]
+        Ansible["Ansible Control Host EC2 t4g.small ($16/mo)"]
+        ECR["Amazon ECR Private Registry ($25/mo)"]
+        ArgoCD["ArgoCD Single-Instance Test Operator ($102/mo)"] --> Pods
+    end
+
+    subgraph DatabaseTier["Isolated Database Subnets (Zero-Internet 10.100.100.0/24 & 10.100.200.0/24 - $540/mo)"]
+        Pods -->|MySQL TLS| RDS["Amazon RDS MySQL db.m6g.large Multi-AZ ($240/mo)"]
+        Pods -->|Redis TLS| Redis["Amazon ElastiCache Redis cache.t4g.medium 2-Node ($50/mo)"]
+        Pods -->|AMQPS| RabbitMQ["Amazon MQ RabbitMQ mq.t3.micro Multi-AZ ($70/mo)"]
+        Pods -->|MongoDB TLS| DocDB["Amazon DocumentDB db.t4g.medium 2-Node Cluster ($180/mo)"]
+    end
+
+    subgraph ObservabilityTier["Central Security & Observability Stack (VPC 10.300.0.0/16 - $394/mo)"]
+        Secrets["AWS Secrets Manager & KMS CMK Keys ($60/mo)"] -->|External Secrets Operator ESO| Pods
+        Pods --> FluentBit["Fluent Bit DaemonSet Worker Nodes"]
+        FluentBit --> OpenSearch["Amazon OpenSearch Single-Node Test Cluster t3.medium.search ($70/mo)"]
+        FluentBit --> S3Glacier["Amazon S3 Velero Backup & Log Archive ($44/mo)"]
+        Pods --> PromGraf["Prometheus & Grafana (50GB EBS) ($80/mo)"]
+        GuardDuty["CloudWatch, GuardDuty & AWS Config ($140/mo)"]
+    end

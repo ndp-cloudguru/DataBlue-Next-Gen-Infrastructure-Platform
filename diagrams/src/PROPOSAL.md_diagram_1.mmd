@@ -1,0 +1,8 @@
+graph TD
+    REQ["Requirements Baseline"]
+    REQ --> BUS["Business Requirements BUS-001 to BUS-004<br/>40 Microservices, Test and Prod Isolation"]
+    REQ --> FUN["Functional Requirements FUN-001 to FUN-009<br/>EKS, GitLab, Jenkins, Ansible, MySQL, Redis, RabbitMQ, MongoDB, Nacos"]
+    REQ --> NFR["Non-Functional Requirements NFR-001 to NFR-004<br/>Multi-AZ HA, Karpenter Autoscaling, Backup and DR, P95 under 200ms"]
+    REQ --> SEC["Security Requirements SEC-001 to SEC-003<br/>IAM IRSA, Account Isolation, KMS Encryption"]
+    REQ --> OPS["Operations Requirements OPS-001 to OPS-002<br/>Prometheus, Grafana, OpenSearch, S3 Glacier"]
+    REQ --> CST["FinOps Cost Requirements CST-001 to CST-002<br/>AWS Tagging Policy, Cost Optimization"]

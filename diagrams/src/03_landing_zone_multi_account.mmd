@@ -1,0 +1,33 @@
+graph TD
+    subgraph Org["AWS Organizations Landing Zone ADR-001"]
+        subgraph SecAcc["Security and Logging Account"]
+            KMS["AWS KMS CMK Keys"]
+            Secrets["AWS Secrets Manager Vault"]
+            Vault["AWS Backup Vault Lock"]
+            EvdVault["S3 Evidence and Audit Vault"]
+        end
+
+        subgraph SharedAcc["Shared Services Account"]
+            GitLab["GitLab Enterprise EC2"]
+            Jenkins["Jenkins CI Master and Workers"]
+            Ansible["Ansible Control Host"]
+            ECR["Amazon ECR Container Registry"]
+        end
+
+        subgraph TestAcc["DataBlue Test Account BUS-003"]
+            TestVPC["Test VPC 3 AZs"]
+            TestEKS["Test EKS Cluster v1.30"]
+            TestRDS["Test Managed Databases"]
+        end
+
+        subgraph ProdAcc["DataBlue Prod Account BUS-003"]
+            ProdVPC["Prod VPC 3 AZs"]
+            ProdEKS["Prod EKS Cluster v1.30"]
+            ProdRDS["Prod Managed Databases"]
+        end
+    end
+
+    SharedAcc --> ECR
+    SharedAcc --> ProdEKS
+    SecAcc --> ProdEKS
+    SecAcc --> TestEKS

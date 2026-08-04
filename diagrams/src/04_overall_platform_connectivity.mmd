@@ -1,0 +1,28 @@
+graph TD
+    subgraph Edge["Perimeter Edge and Public Tier"]
+        Users["External Users Web and Mobile"] --> CFDNS["Cloudflare DNS and Cloudflare CDN"]
+        CFDNS --> WAF["Cloudflare WAF Edge Rules"]
+        WAF --> ALB["AWS Application Load Balancer Public Subnet"]
+    end
+
+    subgraph EKSCluster["Amazon EKS Compute Tier Private App Subnets 3 AZs"]
+        ALB --> IngressCtrl["AWS ALB Ingress Controller"]
+        IngressCtrl --> Pods["40 Microservice Pods"]
+        Pods --> Nacos["Nacos 3-Node Raft Cluster"]
+        Nacos --> Pods
+        Karpenter["Karpenter JIT Autoscaler"] --> Pods
+    end
+
+    subgraph DatabaseTier["Stateful Data Tier Isolated Database Subnets 3 AZs"]
+        Pods --> RDS["Amazon RDS MySQL Multi-AZ"]
+        Pods --> Cache["Amazon ElastiCache Redis Multi-AZ"]
+        Pods --> RabbitMQ["Amazon MQ RabbitMQ Quorum Broker"]
+        Pods --> DocDB["Amazon DocumentDB 3-Node Cluster"]
+    end
+
+    subgraph MonitoringTier["Observability and Management Tier"]
+        Pods --> FluentBit["Fluent Bit DaemonSet"]
+        FluentBit --> OpenSearch["Amazon OpenSearch Cluster"]
+        FluentBit --> S3Glacier["Amazon S3 and Glacier Archive"]
+        Pods --> PromGraf["Prometheus and Grafana Dashboards"]
+    end

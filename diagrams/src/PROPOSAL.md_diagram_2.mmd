@@ -1,0 +1,49 @@
+flowchart TB
+    subgraph Layer1["1. Perimeter Edge and Ingress Tier (Public Subnets across 3 AZs)"]
+        User["External Users / Web and Mobile Apps"] -->|HTTPS| DNS["Cloudflare DNS and Cloudflare CDN"]
+        DNS -->|WAF Inspection| WAF["Cloudflare WAF Web Application Firewall"]
+        WAF -->|Public Ingress| IGW["AWS Internet Gateway"]
+        IGW --> ALB["AWS Application Load Balancers Public Subnet"]
+        NAT["AWS NAT Gateways Outbound Egress"]
+    end
+
+    subgraph Layer2["2. Shared Services Account (CI/CD and Management Tier)"]
+        Dev["Software Developers and SREs"] -->|SSO Authentication| IAMSSO["AWS IAM Identity Center"]
+        IAMSSO --> GitLab["GitLab Enterprise Source and Webhooks"]
+        GitLab -->|Trigger Build| Jenkins["Jenkins CI Master and Dynamic Workers"]
+        Jenkins -->|Push Scanned Images| ECR["Amazon ECR Private Registry"]
+        Jenkins -->|Run Playbooks| Ansible["Ansible Control Host"]
+        Ansible -->|Update Manifests| GitRepo["GitOps Manifest Repository"]
+        GitRepo -->|Sync Cluster State| ArgoCD["ArgoCD Operator EKS Cluster"]
+    end
+
+    subgraph Layer3["3. Production Account (Amazon EKS Container Runtime - Private Subnets)"]
+        subgraph EKSControl["EKS Control Plane AWS Managed"]
+            etcd["etcd Control Plane Multi-AZ HA"]
+        end
+
+        ALB -->|Target Group Routing| ALBController["AWS ALB Ingress Controller"]
+        ALBController --> Microservices["40 Application Microservices 5-6 Business Systems"]
+        
+        Microservices --> Nacos["Nacos 3-Node Raft Cluster StatefulSet"]
+        Nacos --> Microservices
+        Karpenter["Karpenter JIT Autoscaler"] -->|Launch EC2 Nodes| Microservices
+        ArgoCD -->|Deploy Pods| Microservices
+    end
+
+    subgraph Layer4["4. Isolated Stateful Database Tier (Zero-Internet Subnets across 3 AZs)"]
+        Microservices -->|MySQL Protocol| RDS["Amazon RDS MySQL Multi-AZ Primary and Standby"]
+        Microservices -->|Redis Protocol| Redis["Amazon ElastiCache Redis 2-Node Cluster"]
+        Microservices -->|AMQP Protocol| RabbitMQ["Amazon MQ RabbitMQ 3-Node Quorum Broker"]
+        Microservices -->|Mongo Protocol| DocDB["Amazon DocumentDB 3-Node Cluster"]
+    end
+
+    subgraph Layer5["5. Security and Observability Account (Central Governance)"]
+        Secrets["AWS Secrets Manager"] -->|ESO Pod Sync| Microservices
+        KMS["AWS KMS CMK Keys"] -->|Encrypt At Rest| RDS
+        KMS -->|Encrypt At Rest| ECR
+        Microservices -->|Log Streaming| FluentBit["Fluent Bit DaemonSet"]
+        FluentBit -->|30-Day Hot Search| OpenSearch["Amazon OpenSearch Cluster"]
+        FluentBit -->|Long-Term Archive| S3Glacier["Amazon S3 and S3 Glacier Archive"]
+        Microservices -->|Metric Scraping| PromGraf["Prometheus and Grafana Dashboards"]
+    end

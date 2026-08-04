@@ -1,0 +1,28 @@
+flowchart TB
+    subgraph GlobalEdge["Global Edge & Failover Routing Tier"]
+        Users["Global Web & Mobile Users"] -->|DNS Health Check Failover| GTM["Cloudflare Global Traffic Manager (GTM) / DNS"]
+    end
+
+    subgraph PrimaryRegion["Primary Active Region (us-east-1 3-AZ Production Footprint - $6,100 - $8,500/mo)"]
+        GTM -->|Active Traffic| PrimALB["Primary AWS ALB Ingress Tier"]
+        PrimALB --> PrimEKS["Primary EKS Cluster v1.30 (40 Microservice Pods)"]
+        PrimEKS --> PrimRDS["Primary RDS MySQL Multi-AZ Primary & Standby"]
+        PrimEKS --> PrimRedis["Primary ElastiCache Redis Cluster"]
+        PrimEKS --> PrimDocDB["Primary Amazon DocumentDB 3-Node Cluster"]
+        PrimEKS --> PrimOS["Primary OpenSearch Service Cluster"]
+        PrimEKS --> PrimS3["Primary S3 Velero & Log Archive"]
+    end
+
+    subgraph CrossRegionSync["Cross-Region Replication & Disaster Recovery Layer ($800 - $1,600/mo)"]
+        PrimRDS -->|RDS Cross-Region Snapshot Sync| DRRDS
+        PrimS3 -->|S3 Cross-Region Replication CRR| DRS3
+        PrimECR["Primary Amazon ECR"] -->|ECR Cross-Region Image Sync| DRECR["Secondary ECR"]
+    end
+
+    subgraph SecondaryDR["Secondary DR Standby Region (us-west-2 Pilot Light Footprint - $2,200 - $3,200/mo)"]
+        GTM -- Automatic Failover RTO under 4h --> DRALB["Standby DR AWS ALB Ingress Tier"]
+        DRALB --> DREKS["Pilot Light EKS Cluster (Standby Worker Nodes)"]
+        DREKS --> DRRDS["Standby RDS MySQL Cross-Region Replica (db.m6g.large)"]
+        DREKS --> DROS["Standby OpenSearch Mirror Node"]
+        DREKS --> DRS3["Secondary Region S3 Backup Vault Lock ($900 - $1,500/mo)"]
+    end

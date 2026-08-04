@@ -1,0 +1,14 @@
+graph TD
+    subgraph PodLogging["Container Logging Subsystem"]
+        Pods["Microservice Pods stdout/stderr"] --> Daemon["Fluent Bit DaemonSet Worker Nodes"]
+        Daemon --> OpenSearch["Amazon OpenSearch Service 30-Day Index"]
+        Daemon --> S3Bucket["Amazon S3 Log Archive Bucket"]
+        S3Bucket --> Glacier["Amazon S3 Glacier Flexible Retrieval"]
+    end
+
+    subgraph MetricsScraping["APM Metrics Subsystem"]
+        KubeState["kube-state-metrics"] --> Prom["Prometheus Server EKS StatefulSet"]
+        NodeExp["node-exporter"] --> Prom
+        Pods --> Prom
+        Prom --> Grafana["Grafana Operational Dashboards"]
+    end
