@@ -1,4 +1,4 @@
-🌐 **语言 / Language**: [English](README.md) | [Tiếng Việt](README.vi.md) | [中文 (Chinese)](README.zh.md)
+🌐 **语言 / Language / Ngôn ngữ**: [English](README.md) | [Tiếng Việt](README.vi.md) | [中文 (Chinese)](README.zh.md)
 
 ---
 
@@ -23,10 +23,10 @@
 
 ## 2. 当前项目状态 (Current Status)
 
-* **阶段**: 阶段 5 — 验证计划与独立架构图 (Verification Planning & Standalone Architecture Diagrams)
+* **阶段**: 阶段 5 — 验证计划与三语文档树基线 (Verification Planning & Trilingual Baseline)
 * **状态**: **活跃 / 规划已完成 (ACTIVE / PLANNING COMPLETED)**
 * **已完成里程碑**:
-  * 项目宪章与治理规则 (`PROJECT-CHARTER.md`, `AGENTS.md`)
+  * 项目宪章与治理规则 (`PROJECT-CHARTER.md`, `AGENTS.md`, `AGENTS.vi.md`)
   * 需求重构与规范化 (`REQUIREMENTS-REGISTER.md`)
   * 工程假设与开放问题登记册 (`ASSUMPTIONS-REGISTER.md`, `OPEN-QUESTIONS.md`)
   * 非功能性需求与验收标准定义 (`NON-FUNCTIONAL-REQUIREMENTS.md`, `ACCEPTANCE-CRITERIA.md`)
@@ -36,12 +36,13 @@
   * 阶段 4 包含 11 个阶段的实施路线图 (`IMPLEMENTATION-ROADMAP.md`)
   * 包含 20 个工作包的工作分解结构 WBS (`WORK-BREAKDOWN-STRUCTURE.md`)
   * 验收门禁框架 `GATE-01` 至 `GATE-10` (`ACCEPTANCE-GATES.md`)
-  * 参数化成本模型与场景 1 至 5 (`COST-MODEL.md`, `COST-SCENARIOS.md`, `cost_summary/`)
+  * 参数化成本模型与场景 1 至 5 (`COST-MODEL.md`, `COST-SCENARIOS.md`)
   * 运维模型与支持就绪计划 (`OPERATING-MODEL.md`, `SUPPORT-READINESS-PLAN.md`)
-  * 阶段 5 验证计划包（包含 `docs/zh/07-verification/` 下的 11 个产物）
-  * 多语言文档树结构（`docs/en/`、`docs/vi/` 与 `docs/zh/`）
-  * 多语言 Excel 成本分析报告与 Generator (`cost_summary/`)
+  * 阶段 5 验证计划包（包含 `docs/zh/07-verification/`、`docs/en/07-verification/` 与 `docs/vi/07-verification/` 下的 11 个产物）
+  * **三语文档树结构**（`docs/en/`、`docs/vi/` 与 `docs/zh/`，每棵树各包含 58 份 Markdown 文档）
+  * **高管级提案发布包** (`final_proposal/` 包含 `PROPOSAL.vi.md`、`PROPOSAL.en.md` 与 `PROPOSAL.zh.md`)
   * 独立架构图目录 (`diagrams/src/`)
+  * 多语言 AWS 成本分析 Excel 报告与 Generator (`cost_summary/`)
 
 ---
 
@@ -54,8 +55,12 @@ datablue-nextgen-infra-platform/
 ├── README.zh.md                                 # Master README 中文版 (本文件)
 ├── AGENTS.md                                    # AI Agent 治理与门禁规则 (英文版)
 ├── AGENTS.vi.md                                 # AI Agent 治理与门禁规则 (越南语版)
+├── final_proposal/                              # 高管级提案发布包 (多语言版本)
+│   ├── README.md                                # 提案包索引与指南
+│   ├── PROPOSAL.vi.md                           # 越南语 Master 提案 (官方主版本)
+│   ├── PROPOSAL.en.md                           # 英文 Master 提案
+│   └── PROPOSAL.zh.md                           # 中文 Master 提案 (中文版)
 ├── cost_summary/                                # 多语言 AWS 成本分析 Excel 报告与 Generator
-│   ├── README.md                                # 成本包说明文档
 │   ├── generate_cost_excel.py                   # Master Python OpenPyXL 成本生成脚本
 │   ├── DataBlue_AWS_Cost_Analysis.xlsx          # 越南语详细成本分析 Excel
 │   ├── DataBlue_AWS_Cost_Analysis_EN.xlsx       # 英文详细成本分析 Excel
@@ -63,11 +68,11 @@ datablue-nextgen-infra-platform/
 ├── diagrams/                                    # 独立 Mermaid 架构图目录
 │   ├── README.md                                # 架构图索引与渲染指南
 │   ├── render.py                                # Python 自动渲染编译脚本
-│   └── src/                                     # 原始 .mmd 源码文件 (01-14)
+│   └── src/                                     # 原始 .mmd 源码文件
 └── docs/
-    ├── en/                                      # 英文文档树 (English Documentation)
-    ├── vi/                                      # 越南语文档树 (Vietnamese Documentation)
-    └── zh/                                      # 中文文档树 (Chinese Documentation)
+    ├── en/                                      # 英文文档树 (58 份 Markdown 文档)
+    ├── vi/                                      # 越南语文档树 (58 份 Markdown 文档)
+    └── zh/                                      # 中文文档树 (58 份 Markdown 文档 - 中文文档树)
         ├── 00-governance/
         ├── 01-requirements/
         ├── 02-architecture/
@@ -76,7 +81,8 @@ datablue-nextgen-infra-platform/
         ├── 05-cost/
         ├── 06-operations/
         ├── 07-verification/
-        └── 08-risks/
+        ├── 08-risks/
+        └── PROPOSAL.md
 ```
 
 ---
@@ -99,10 +105,14 @@ datablue-nextgen-infra-platform/
 
 ## 5. 导航与快速访问 (Navigation)
 
-* **执行提案 (英文)**: [`docs/en/PROPOSAL.md`](docs/en/PROPOSAL.md)
-* **执行提案 (中文)**: [`docs/zh/PROPOSAL.md`](docs/zh/PROPOSAL.md)
-* **多语言 Excel 成本分析与 Generator**: [`cost_summary/`](cost_summary/)
-* **独立 Mermaid 架构图**: [`diagrams/`](diagrams/)
+* **高管级提案发布包**: [`final_proposal/`](final_proposal/)
+* **执行提案 (越南语 - 主版本)**: [`final_proposal/PROPOSAL.vi.md`](final_proposal/PROPOSAL.vi.md)
+* **执行提案 (英文)**: [`final_proposal/PROPOSAL.en.md`](final_proposal/PROPOSAL.en.md)
+* **执行提案 (中文)**: [`final_proposal/PROPOSAL.zh.md`](final_proposal/PROPOSAL.zh.md)
 * **中文文档索引树**: [`docs/zh/`](docs/zh/)
 * **英文文档索引树**: [`docs/en/`](docs/en/)
 * **越南语文档索引树**: [`docs/vi/`](docs/vi/)
+* **独立 Mermaid 架构图**: [`diagrams/`](diagrams/)
+* **多语言 Excel 成本分析与 Generator**: [`cost_summary/`](cost_summary/)
+* **AI Agent 治理规则 (英文版)**: [`AGENTS.md`](AGENTS.md)
+* **AI Agent 治理规则 (越南语版)**: [`AGENTS.vi.md`](AGENTS.vi.md)

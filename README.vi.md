@@ -1,4 +1,4 @@
-🌐 **Language / Ngôn ngữ**: [English](README.md) | [Tiếng Việt](README.vi.md)
+🌐 **Language / Ngôn ngữ / 语言**: [English](README.md) | [Tiếng Việt](README.vi.md) | [中文 (Chinese)](README.zh.md)
 
 ---
 
@@ -23,7 +23,7 @@ Nền tảng mục tiêu sẽ vận hành:
 
 ## 2. Trạng thái Hiện tại
 
-* **Giai đoạn**: Stage 5 — Lập Kế hoạch Kiểm toán & Sơ đồ Kiến trúc Độc lập
+* **Giai đoạn**: Stage 5 — Lập Kế hoạch Kiểm toán & Cơ sở Tài liệu Tam ngữ (Trilingual Baseline)
 * **Trạng thái**: **ĐANG HOẠT ĐỘNG / ĐÃ HOÀN THÀNH LẬP KẾ HOẠCH**
 * **Các Cột mốc Đã Hoàn thành**:
   * Điều lệ Dự án & Quy tắc Quản trị (`PROJECT-CHARTER.md`, `AGENTS.md`, `AGENTS.vi.md`)
@@ -36,16 +36,13 @@ Nền tảng mục tiêu sẽ vận hành:
   * Lộ trình Triển khai 11 Giai đoạn Stage 4 (`IMPLEMENTATION-ROADMAP.md`)
   * Cấu trúc Phân rã Công việc 20 Gói Công việc (`WORK-BREAKDOWN-STRUCTURE.md`)
   * Khung Cổng Phê duyệt `GATE-01` đến `GATE-10` (`ACCEPTANCE-GATES.md`)
-  * Mô hình Chi phí Tham số & 4 Kịch bản Chi phí (`COST-MODEL.md`, `COST-SCENARIOS.md`)
+  * Mô hình Chi phí Tham số & Kịch bản 1 đến 5 (`COST-MODEL.md`, `COST-SCENARIOS.md`)
   * Mô hình Vận hành & Kế hoạch Sẵn sàng Hỗ trợ (`OPERATING-MODEL.md`, `SUPPORT-READINESS-PLAN.md`)
-  * Chuẩn hóa Cấu trúc Thư mục Tài liệu (đổi tên `04-cost` thành `05-cost`)
-  * Bộ Sản phẩm Lập Kế hoạch Kiểm toán Stage 5 (11 tài liệu trong `docs/vi/07-verification/`)
-  * Cấu trúc Thư mục Tài liệu Song ngữ (`docs/en/` và `docs/vi/`)
+  * Bộ Sản phẩm Lập Kế hoạch Kiểm toán Stage 5 (11 tài liệu trong `docs/vi/07-verification/`, `docs/en/07-verification/`, `docs/zh/07-verification/`)
+  * **Cấu trúc Thư mục Tài liệu Tam ngữ** (`docs/en/`, `docs/vi/`, và `docs/zh/` với 58 tài liệu markdown mỗi ngôn ngữ)
+  * **Gói Đề xuất Phát hành Executive Proposal** (`final_proposal/` chứa `PROPOSAL.vi.md`, `PROPOSAL.en.md`, và `PROPOSAL.zh.md`)
   * Thư mục Sơ đồ Kiến trúc Độc lập (`diagrams/src/`)
-* **Các Cột mốc Đang Chờ**:
-  * Thu thập Số liệu Tải & Đo đạc Tải Khách hàng (Thực thi Phase 0)
-  * Phê duyệt Chính thức của Con người đối với các ADR Đề xuất (`GATE-03`)
-  * Cấp phát Hạ tầng AWS Nền tảng Phase 1 (`WP-002`)
+  * Báo cáo Phân tích Chi phí AWS Excel Đa ngôn ngữ & Script Generator (`cost_summary/`)
 
 ---
 
@@ -56,10 +53,11 @@ Nền tảng mục tiêu sẽ vận hành:
 2. **Quản trị Kiến trúc**: Quy định rõ ràng các quy tắc vận hành cho sự phê duyệt của con người, hạn chế của AI agent và các cổng chuyển giao giai đoạn.
 3. **Đánh giá Kiến trúc Phân tách**: Đặc tả kiến trúc 17 mục bao phủ Bối cảnh Hệ thống, Logic, Triển khai, Mạng, Bảo mật, HA, Khả năng Mở rộng, Observability, Backup, DR và Kiến trúc Chi phí.
 4. **Bộ Quyết định Kiến trúc**: 15 bản ADR toàn diện được đánh giá dựa trên yêu cầu, ràng buộc, rủi ro, năng lực vận hành, chi phí và tính có thể đảo ngược.
-5. **Bộ Lập Kế hoạch Triển khai & Chi phí**: 19 sản phẩm kế hoạch được kiểm soát và truy xuất bao gồm WBS, Ma trận Phụ thuộc, Kế hoạch Bootstrap, Các Làn sóng Dịch chuyển, Chiến lược Rollback, Mô hình Chi phí 4 Kịch bản và Mô hình Vận hành RACI.
+5. **Bộ Lập Kế hoạch Triển khai & Chi phí**: 19 sản phẩm kế hoạch được kiểm soát và truy xuất bao gồm WBS, Ma trận Phụ thuộc, Kế hoạch Bootstrap, Các Làn sóng Dịch chuyển, Chiến lược Rollback, Mô hình Chi phí Kịch bản 1–5 và Mô hình Vận hành RACI.
 6. **Bộ Sản phẩm Lập Kế hoạch Kiểm toán**: 11 sản phẩm Stage 5 bao gồm Ma trận Truy xuất Yêu cầu, Kiểm toán Tuân thủ Kiến trúc, Đăng ký Bằng chứng Kiểm thử, Kiểm thử Bảo mật, Hiệu năng, HA, Backup/Restore, DR, Xác minh Chi phí và Báo cáo Sẵn sàng Phát hành Master.
-7. **Tài liệu Song ngữ**: Cấu trúc cây tài liệu hoàn chỉnh bằng tiếng Anh (`docs/en/`) và tiếng Việt (`docs/vi/`).
-8. **Sơ đồ Mermaid Độc lập**: Thư mục `diagrams/src/` chứa 14 sơ đồ nguồn `.mmd` thuần giúp dễ dàng render và bảo trì.
+7. **Tài liệu Tam ngữ**: Cấu trúc cây tài liệu hoàn chỉnh bằng tiếng Anh (`docs/en/`), tiếng Việt (`docs/vi/`) và tiếng Trung (`docs/zh/`) với tính tương đương thông tin 100% (58 tài liệu mỗi cây).
+8. **Gói Đề xuất Executive Proposal**: Bộ tài liệu đề xuất tổng thể tại `final_proposal/` (`PROPOSAL.vi.md`, `PROPOSAL.en.md`, `PROPOSAL.zh.md`).
+9. **Sơ đồ Mermaid Độc lập**: Thư mục `diagrams/src/` chứa các sơ đồ nguồn `.mmd` thuần giúp dễ dàng render và bảo trì.
 
 ---
 
@@ -69,31 +67,29 @@ Nền tảng mục tiêu sẽ vận hành:
 datablue-nextgen-infra-platform/
 ├── README.md                                    # Master README Tiếng Anh
 ├── README.vi.md                                 # Master README Tiếng Việt (Bản này)
+├── README.zh.md                                 # Master README Tiếng Trung (Bản tiếng Trung)
 ├── AGENTS.md                                    # Quy tắc quản trị & kiểm soát AI Agent (Tiếng Anh)
 ├── AGENTS.vi.md                                 # Quy tắc quản trị & kiểm soát AI Agent (Tiếng Việt)
-├── diagrams/                                    # Thư mục Sơ đồ Kiến trúc Mermaid Độc lập
-│   ├── README.md                                # Mục lục sơ đồ và hướng dẫn render
-│   ├── render.py                                # Script Python tự động trích xuất & biên dịch sơ đồ
-│   ├── src/                                     # File nguồn .mmd thuần (01-14)
-│   ├── svg/                                     # Ảnh vector SVG rendered
-│   └── png/                                     # Ảnh bitmap PNG rendered
-├── cost_summary/                                # Báo cáo Phân tích Chi phí AWS Excel Song ngữ & Script Master Generator
+├── final_proposal/                              # Gói Đề xuất Executive Proposal (Các bản Đa ngôn ngữ)
+│   ├── README.md                                # Hướng dẫn & Mục lục gói đề xuất
+│   ├── PROPOSAL.vi.md                           # Bản Đề xuất Executive Master Tiếng Việt (Bản chính thức)
+│   ├── PROPOSAL.en.md                           # Bản Đề xuất Executive Master Tiếng Anh
+│   └── PROPOSAL.zh.md                           # Bản Đề xuất Executive Master Tiếng Trung (Bản tiếng Trung)
+├── cost_summary/                                # Báo cáo Phân tích Chi phí AWS Excel Đa ngôn ngữ & Script Master Generator
 │   ├── generate_cost_excel.py                   # Script Python OpenPyXL Master Generator
 │   ├── DataBlue_AWS_Cost_Analysis.xlsx          # Bảng tính Phân tích Chi phí Chi tiết Tiếng Việt
 │   ├── DataBlue_AWS_Cost_Analysis_EN.xlsx       # Bảng tính Phân tích Chi phí Chi tiết Tiếng Anh
 │   └── DataBlue_AWS_Cost_Analysis_CN.xlsx       # Bảng tính Phân tích Chi phí Chi tiết Tiếng Trung
+├── diagrams/                                    # Thư mục Sơ đồ Kiến trúc Mermaid Độc lập
+│   ├── README.md                                # Mục lục sơ đồ và hướng dẫn render
+│   ├── render.py                                # Script Python tự động trích xuất & biên dịch sơ đồ
+│   ├── src/                                     # File nguồn .mmd thuần
+│   ├── svg/                                     # Ảnh vector SVG rendered
+│   └── png/                                     # Ảnh bitmap PNG rendered
 └── docs/
-    ├── en/                                      # Cây Tài liệu Tiếng Anh
-    │   ├── 00-governance/
-    │   ├── 01-requirements/
-    │   ├── 02-architecture/
-    │   ├── 03-decisions/
-    │   ├── 04-planning/
-    │   ├── 05-cost/
-    │   ├── 06-operations/
-    │   ├── 07-verification/
-    │   └── 08-risks/
-    └── vi/                                      # Cây Tài liệu Tiếng Việt (Bản dịch tiếng Việt)
+    ├── en/                                      # Cây Tài liệu Tiếng Anh (58 file Markdown)
+    ├── vi/                                      # Cây Tài liệu Tiếng Việt (58 file Markdown)
+    └── zh/                                      # Cây Tài liệu Tiếng Trung (58 file Markdown - 中文文档树)
         ├── 00-governance/
         ├── 01-requirements/
         ├── 02-architecture/
@@ -102,36 +98,39 @@ datablue-nextgen-infra-platform/
         ├── 05-cost/
         ├── 06-operations/
         ├── 07-verification/
-        └── 08-risks/
+        ├── 08-risks/
+        └── PROPOSAL.md
 ```
 
 ---
 
-## 5. Quy ước & Mã Định danh Yêu cầu (Requirement Identifiers & Conventions)
+## 5. Quy chuẩn Định danh Yêu cầu
 
-Tất cả các sản phẩm của dự án tuân thủ nghiêm ngặt định dạng mã định danh (ID) chuẩn hóa để đảm bảo khả năng truy xuất nguồn gốc chéo 100% giữa các đặc tả, quyết định ADR, gói công việc và kịch bản kiểm toán:
+Tất cả sản phẩm dự án đều tuân thủ nghiêm ngặt định dạng ID chuẩn hóa để duy trì tính truy xuất 100% giữa đặc tả, ADR, gói công việc và test case kiểm toán:
 
-* **Yêu cầu Kinh doanh**: `BUS-001` đến `BUS-004` (Mục tiêu Kinh doanh & Chi phí)
-* **Yêu cầu Chức năng**: `FUN-001` đến `FUN-009` (Microservices, CI/CD, CSDL, & Nacos)
-* **Yêu cầu Phi Chức năng**: `NFR-001` đến `NFR-003` (Sẵn sàng cao 99.9%, Karpenter Autoscaling & DR RTO/RPO SLAs)
-* **Yêu cầu Bảo mật**: `SEC-001` đến `SEC-003` (Định danh IRSA OIDC, Subnet Cô lập, Mã hóa KMS & Cloudflare WAF)
-* **Vận hành & Quan sát**: `OPS-001` đến `OPS-003` (Ghi log OpenSearch, Prometheus/Grafana APM & Kiểm soát FinOps)
-* **Quản lý Chi phí**: `CST-001` đến `CST-002` (Mô hình Chi phí Tham số 4 Kịch bản & Savings Plans)
-* **Giả định Kiến trúc**: `ASM-001` đến `ASM-005` (Tham số Tải & Năng lực Tính toán)
-* **Nhật ký Quyết định Kiến trúc**: `ADR-001` đến `ADR-015` (Các Quyết định Lựa chọn Công nghệ Master)
-* **Gói Công việc & Cổng Phê duyệt**: `WP-001` đến `WP-020`, `GATE-01` đến `GATE-10` (Lộ trình Triển khai 11 Giai đoạn)
-* **Bằng chứng Kiểm toán**: `EVD-REQ-xxx`, `EVD-SEC-xxx`, `EVD-DR-xxx` (Bộ Sản phẩm Kiểm toán Stage 5)
+* **Yêu cầu Nghiệp vụ**: `BUS-001` đến `BUS-004` (Mục tiêu Kính doanh & Ngân sách)
+* **Yêu cầu Chức năng**: `FUN-001` đến `FUN-009` (Năng lực Nền tảng Microservices, CI/CD, DB & Nacos)
+* **Yêu cầu Phi Chức năng**: `NFR-001` đến `NFR-003` (Sẵn sàng cao 99.9%, Mở rộng phút & SLAs DR)
+* **Yêu cầu Bảo mật**: `SEC-001` đến `SEC-003` (Định danh IRSA OIDC, Subnet Cách ly, Mã hóa KMS & WAF)
+* **Vận hành & Quan sát**: `OPS-001` đến `OPS-003` (Nhật ký OpenSearch, APM Prometheus/Grafana & FinOps)
+* **Yêu cầu Quản lý Chi phí**: `CST-001` đến `CST-002` (Kịch bản Chi phí Tham số 1–5 & Savings Plans)
+* **Giả định Kỹ thuật**: `ASM-001` đến `ASM-005` (Giả định Tải & Năng lực)
+* **Quyết định Kiến trúc**: `ADR-001` đến `ADR-015` (Bộ Quyết định Công nghệ Master)
+* **Gói Công việc & Cổng**: `WP-001` đến `WP-020`, `GATE-01` đến `GATE-10` (Lộ trình Triển khai 11 Phase)
+* **Bằng chứng Kiểm thử**: `EVD-REQ-xxx`, `EVD-SEC-xxx`, `EVD-DR-xxx` (Bộ Hồ sơ Kiểm toán Stage 5)
 
 ---
 
-## 6. Đề xuất Tổng thể & Điều hướng Quản trị
+## 6. Điều hướng Đề xuất & Quản trị
 
-* **Đề xuất Tổng thể (Tiếng Anh)**: [`PROPOSAL.md`](docs/en/PROPOSAL.md)
-* **Đề xuất Tổng thể (Tiếng Việt)**: [`PROPOSAL.vi.md`](docs/vi/PROPOSAL.md)
-* **Thư mục Sơ đồ Độc lập**: [`diagrams/`](diagrams/)
-* **Báo cáo Phân tích Chi phí Excel & Generator**: [`cost_summary/`](cost_summary/)
-* **Phương pháp luận**: Quản trị Hướng Kiến trúc
-* **Quy tắc Agent (Tiếng Anh)**: [`AGENTS.md`](AGENTS.md)
-* **Quy tắc Agent (Tiếng Việt)**: [`AGENTS.vi.md`](AGENTS.vi.md)
-* **Mục lục Tài liệu Tiếng Anh**: [`docs/en/`](docs/en/)
+* **Gói Đề xuất Executive Proposal**: [`final_proposal/`](final_proposal/)
+* **Đề xuất Executive (Tiếng Việt - Chính thức)**: [`final_proposal/PROPOSAL.vi.md`](final_proposal/PROPOSAL.vi.md)
+* **Đề xuất Executive (Tiếng Anh)**: [`final_proposal/PROPOSAL.en.md`](final_proposal/PROPOSAL.en.md)
+* **Đề xuất Executive (Tiếng Trung)**: [`final_proposal/PROPOSAL.zh.md`](final_proposal/PROPOSAL.zh.md)
 * **Mục lục Tài liệu Tiếng Việt**: [`docs/vi/`](docs/vi/)
+* **Mục lục Tài liệu Tiếng Anh**: [`docs/en/`](docs/en/)
+* **Mục lục Tài liệu Tiếng Trung**: [`docs/zh/`](docs/zh/)
+* **Thư mục Sơ đồ Độc lập**: [`diagrams/`](diagrams/)
+* **Báo cáo & Generator Chi phí (Excel)**: [`cost_summary/`](cost_summary/)
+* **Quy tắc Quản trị Agent (Tiếng Việt)**: [`AGENTS.vi.md`](AGENTS.vi.md)
+* **Quy tắc Quản trị Agent (Tiếng Anh)**: [`AGENTS.md`](AGENTS.md)
