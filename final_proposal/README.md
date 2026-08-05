@@ -22,6 +22,7 @@ The master proposals are available in bilingual editions:
 | :--- | :--- | :--- |
 | **🇻🇳 Tiếng Việt (Primary)** | [**`PROPOSAL.vi.md`**](PROPOSAL.vi.md) | Bản Đề xuất Technical & FinOps Master Architecture chính thức bằng Tiếng Việt. |
 | **🇬🇧 English** | [**`PROPOSAL.en.md`**](PROPOSAL.en.md) | Official English Executive Proposal & Technical Specification Master Document. |
+| **🇨🇳 中文 (Chinese)** | [**`PROPOSAL.zh.md`**](PROPOSAL.zh.md) | 官方中文高管级架构与成本建议书 (Chinese Executive Proposal). |
 
 ---
 
@@ -63,3 +64,5 @@ Architecture diagrams and infographics referenced in the proposals are maintaine
 To review the full technical proposal, please open:
 - [**Bản Tiếng Việt (PROPOSAL.vi.md)**](PROPOSAL.vi.md)
 - [**English Version (PROPOSAL.en.md)**](PROPOSAL.en.md)
+- [**中文版 (PROPOSAL.zh.md)**](PROPOSAL.zh.md)
+

@@ -1,0 +1,108 @@
+🌐 **语言 / Language**: [English](README.md) | [Tiếng Việt](README.vi.md) | [中文 (Chinese)](README.zh.md)
+
+---
+
+# DataBlue 下一代基础设施平台架构 (DataBlue Next-Gen Infrastructure Platform Architecture)
+
+> **重要项目声明**: 基础设施具体代码实现（Terraform 模块、Kubernetes Manifest、Helm Chart、部署脚本或 AWS 真实资源创建）**尚未开始**。本仓库当前包含基于架构优先（Architecture-First Development）开发方法的阶段 0 需求基线、阶段 2 架构规范、阶段 3 决策与风险验证、阶段 4 实施计划、阶段 5 验证计划产物以及独立 Mermaid 架构图。
+
+---
+
+## 1. 项目概述 (Project Overview)
+
+**DataBlue 下一代基础设施平台项目** (`datablue-nextgen-infra-platform`) 是一项企业级战略举措，旨在 Amazon Web Services (AWS) 上重构、规范、验证、建模成本、规划并建立生产级、高可用、安全且可动态扩展的云原生容器平台验证框架。
+
+目标平台将承载：
+* **业务系统**: 约 5–6 个业务系统域。
+* **微服务**: 约 40 个分布式微服务，分别部署于独立的测试环境与生产环境。
+* **数据库与中间件**: 关系型数据库 (MySQL)、分布式消息队列 (RabbitMQ)、文档数据库 (MongoDB)、内存缓存 (Redis) 以及服务注册与配置中心 (Nacos)。
+* **CI/CD 与运维工具链**: GitLab 用于源码托管与 Pipeline 触发，Jenkins 用于构建/测试编排，Ansible 用于配置漂移管理与部署自动化。
+* **平台能力**: 动态多层弹性伸缩、高可用、灾难恢复 (DR)、身份与访问权限管理 (IAM/RBAC)、全栈可观测性/监控、持续 FinOps 成本控制以及阶段 5 验证计划。
+
+---
+
+## 2. 当前项目状态 (Current Status)
+
+* **阶段**: 阶段 5 — 验证计划与独立架构图 (Verification Planning & Standalone Architecture Diagrams)
+* **状态**: **活跃 / 规划已完成 (ACTIVE / PLANNING COMPLETED)**
+* **已完成里程碑**:
+  * 项目宪章与治理规则 (`PROJECT-CHARTER.md`, `AGENTS.md`)
+  * 需求重构与规范化 (`REQUIREMENTS-REGISTER.md`)
+  * 工程假设与开放问题登记册 (`ASSUMPTIONS-REGISTER.md`, `OPEN-QUESTIONS.md`)
+  * 非功能性需求与验收标准定义 (`NON-FUNCTIONAL-REQUIREMENTS.md`, `ACCEPTANCE-CRITERIA.md`)
+  * 阶段 2 完整架构规范 (`ARCHITECTURE-SPECIFICATION.md`)
+  * 阶段 3 Master ADR 索引及 15 份独立 ADR 文档 (`ADR-001` 至 `ADR-015`)
+  * 风险登记册、决策依赖图与架构验证包 (`RISK-REGISTER.md`, `DECISION-DEPENDENCIES.md`, `ARCHITECTURE-VALIDATION.md`)
+  * 阶段 4 包含 11 个阶段的实施路线图 (`IMPLEMENTATION-ROADMAP.md`)
+  * 包含 20 个工作包的工作分解结构 WBS (`WORK-BREAKDOWN-STRUCTURE.md`)
+  * 验收门禁框架 `GATE-01` 至 `GATE-10` (`ACCEPTANCE-GATES.md`)
+  * 参数化成本模型与场景 1 至 5 (`COST-MODEL.md`, `COST-SCENARIOS.md`, `cost_summary/`)
+  * 运维模型与支持就绪计划 (`OPERATING-MODEL.md`, `SUPPORT-READINESS-PLAN.md`)
+  * 阶段 5 验证计划包（包含 `docs/zh/07-verification/` 下的 11 个产物）
+  * 多语言文档树结构（`docs/en/`、`docs/vi/` 与 `docs/zh/`）
+  * 多语言 Excel 成本分析报告与 Generator (`cost_summary/`)
+  * 独立架构图目录 (`diagrams/src/`)
+
+---
+
+## 3. 仓库结构 (Repository Structure)
+
+```text
+datablue-nextgen-infra-platform/
+├── README.md                                    # Master README 英文版
+├── README.vi.md                                 # Master README 越南语版
+├── README.zh.md                                 # Master README 中文版 (本文件)
+├── AGENTS.md                                    # AI Agent 治理与门禁规则 (英文版)
+├── AGENTS.vi.md                                 # AI Agent 治理与门禁规则 (越南语版)
+├── cost_summary/                                # 多语言 AWS 成本分析 Excel 报告与 Generator
+│   ├── README.md                                # 成本包说明文档
+│   ├── generate_cost_excel.py                   # Master Python OpenPyXL 成本生成脚本
+│   ├── DataBlue_AWS_Cost_Analysis.xlsx          # 越南语详细成本分析 Excel
+│   ├── DataBlue_AWS_Cost_Analysis_EN.xlsx       # 英文详细成本分析 Excel
+│   └── DataBlue_AWS_Cost_Analysis_CN.xlsx       # 中文详细成本分析 Excel
+├── diagrams/                                    # 独立 Mermaid 架构图目录
+│   ├── README.md                                # 架构图索引与渲染指南
+│   ├── render.py                                # Python 自动渲染编译脚本
+│   └── src/                                     # 原始 .mmd 源码文件 (01-14)
+└── docs/
+    ├── en/                                      # 英文文档树 (English Documentation)
+    ├── vi/                                      # 越南语文档树 (Vietnamese Documentation)
+    └── zh/                                      # 中文文档树 (Chinese Documentation)
+        ├── 00-governance/
+        ├── 01-requirements/
+        ├── 02-architecture/
+        ├── 03-decisions/
+        ├── 04-planning/
+        ├── 05-cost/
+        ├── 06-operations/
+        ├── 07-verification/
+        └── 08-risks/
+```
+
+---
+
+## 4. 需求标识符与命名规范 (Requirement Identifiers)
+
+所有项目产物均严格遵守标准化 ID 格式，以确保在规范、ADR、工作包和验证测试用例之间保持 100% 的交叉可追溯性：
+
+* **业务需求**: `BUS-001` 至 `BUS-004` (高管业务目标与成本目标)
+* **功能需求**: `FUN-001` 至 `FUN-009` (微服务、CI/CD、数据库与 Nacos 平台能力)
+* **非功能需求**: `NFR-001` 至 `NFR-003` (99.9% 高可用、分钟级弹性伸缩与 DR RTO/RPO SLAs)
+* **安全需求**: `SEC-001` 至 `SEC-003` (IRSA OIDC 身份认证、隔离子网、KMS 加密与 Cloudflare WAF)
+* **运维与可观测性**: `OPS-001` 至 `OPS-003` (OpenSearch 集中日志、Prometheus/Grafana APM 与 FinOps 控制)
+* **成本管理需求**: `CST-001` 至 `CST-002` (参数化成本场景 1–5 与 Savings Plans 策略)
+* **工程假设**: `ASM-001` 至 `ASM-005` (工作负载指标与容量假设)
+* **架构决策记录**: `ADR-001` 至 `ADR-015` (主技术选型包)
+* **工作包与门禁**: `WP-001` 至 `WP-020`, `GATE-01` 至 `GATE-10` (11 阶段实施路线图)
+
+---
+
+## 5. 导航与快速访问 (Navigation)
+
+* **执行提案 (英文)**: [`docs/en/PROPOSAL.md`](docs/en/PROPOSAL.md)
+* **执行提案 (中文)**: [`docs/zh/PROPOSAL.md`](docs/zh/PROPOSAL.md)
+* **多语言 Excel 成本分析与 Generator**: [`cost_summary/`](cost_summary/)
+* **独立 Mermaid 架构图**: [`diagrams/`](diagrams/)
+* **中文文档索引树**: [`docs/zh/`](docs/zh/)
+* **英文文档索引树**: [`docs/en/`](docs/en/)
+* **越南语文档索引树**: [`docs/vi/`](docs/vi/)
