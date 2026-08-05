@@ -77,6 +77,11 @@ datablue-nextgen-infra-platform/
 │   ├── src/                                     # Raw .mmd Mermaid source files (01-14)
 │   ├── svg/                                     # Rendered SVG vector graphics
 │   └── png/                                     # Rendered PNG bitmap images
+├── cost_summary/                                # Multilingual AWS Cost Analysis Excel Reports & Master Generator
+│   ├── generate_cost_excel.py                   # Master Python OpenPyXL Excel Generator Script
+│   ├── DataBlue_AWS_Cost_Analysis.xlsx          # Vietnamese Detailed Cost Analysis Workbook
+│   ├── DataBlue_AWS_Cost_Analysis_EN.xlsx       # English Detailed Cost Analysis Workbook
+│   └── DataBlue_AWS_Cost_Analysis_CN.xlsx       # Chinese Detailed Cost Analysis Workbook
 └── docs/
     ├── en/                                      # English Documentation Tree
     │   ├── 00-governance/
@@ -124,6 +129,7 @@ All project artifacts strictly enforce standardized ID formatting to maintain 10
 * **Executive Proposal (English)**: [`PROPOSAL.md`](docs/en/PROPOSAL.md)
 * **Executive Proposal (Vietnamese)**: [`PROPOSAL.vi.md`](docs/vi/PROPOSAL.md)
 * **Standalone Diagrams Directory**: [`diagrams/`](diagrams/)
+* **Cost Analysis Reports & Generator (Excel)**: [`cost_summary/`](cost_summary/)
 * **Methodology**: Architecture-First Governance
 * **Agent Rules (English)**: [`AGENTS.md`](AGENTS.md)
 * **Agent Rules (Vietnamese)**: [`AGENTS.vi.md`](AGENTS.vi.md)

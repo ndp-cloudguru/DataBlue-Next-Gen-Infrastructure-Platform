@@ -77,6 +77,11 @@ datablue-nextgen-infra-platform/
 │   ├── src/                                     # File nguồn .mmd thuần (01-14)
 │   ├── svg/                                     # Ảnh vector SVG rendered
 │   └── png/                                     # Ảnh bitmap PNG rendered
+├── cost_summary/                                # Báo cáo Phân tích Chi phí AWS Excel Song ngữ & Script Master Generator
+│   ├── generate_cost_excel.py                   # Script Python OpenPyXL Master Generator
+│   ├── DataBlue_AWS_Cost_Analysis.xlsx          # Bảng tính Phân tích Chi phí Chi tiết Tiếng Việt
+│   ├── DataBlue_AWS_Cost_Analysis_EN.xlsx       # Bảng tính Phân tích Chi phí Chi tiết Tiếng Anh
+│   └── DataBlue_AWS_Cost_Analysis_CN.xlsx       # Bảng tính Phân tích Chi phí Chi tiết Tiếng Trung
 └── docs/
     ├── en/                                      # Cây Tài liệu Tiếng Anh
     │   ├── 00-governance/
@@ -124,6 +129,7 @@ Tất cả các sản phẩm của dự án tuân thủ nghiêm ngặt định d
 * **Đề xuất Tổng thể (Tiếng Anh)**: [`PROPOSAL.md`](docs/en/PROPOSAL.md)
 * **Đề xuất Tổng thể (Tiếng Việt)**: [`PROPOSAL.vi.md`](docs/vi/PROPOSAL.md)
 * **Thư mục Sơ đồ Độc lập**: [`diagrams/`](diagrams/)
+* **Báo cáo Phân tích Chi phí Excel & Generator**: [`cost_summary/`](cost_summary/)
 * **Phương pháp luận**: Quản trị Hướng Kiến trúc
 * **Quy tắc Agent (Tiếng Anh)**: [`AGENTS.md`](AGENTS.md)
 * **Quy tắc Agent (Tiếng Việt)**: [`AGENTS.vi.md`](AGENTS.vi.md)
