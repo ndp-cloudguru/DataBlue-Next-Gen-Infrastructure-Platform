@@ -103,9 +103,62 @@ scenarios/
 └── scenario-1-test-baseline/               # 🚀 ROOT MODULE MÔI TRƯỜNG TEST BASELINE (ap-southeast-1)
     ├── main.tf                             # Orchestration chính, ghép nối các Module & Dual AWS Providers
     ├── variables.tf                        # Khai báo biến đầu vào (CIDRs, AWS Profiles, CPU/Memory)
-    ├── outputs.tf                          # Xuất Endpoints, ARNs, NLB DNS & ECR URLs
-    └── terraform.tfvars                    # Giá trị biến thực tế theo môi trường
+    ├── outputs.tf                          # Xuất thông số Endpoints, ARNs & Subnet IDs
+    └── terraform.tfvars                    # Giá trị thực tế môi trường Test Baseline
 ```
+
+### 1.3 Chi tiết Kết nối, Đường đi Traffic & Giao tiếp giữa các Lớp mạng (Network Topology & Traffic Paths)
+
+Kiến trúc mạng Test Baseline được chia thành 3 lớp mạng (Multi-Tier Subnet Topology) với luồng giao tiếp kiểm soát chặt chẽ qua AWS Transit Gateway & Security Groups:
+
+```mermaid
+flowchart TD
+    subgraph ClientTier ["🌐 External & Entry Tier"]
+        TestUser["👨‍💻 Dev / Tester / API Client"]
+        EntryNLB["Public Network Load Balancer (Account 2 Entry VPC 10.40.0.0/16)"]
+        FargateProxy["Proxy Task (ECS Fargate 10.40.10.0/24)"]
+    end
+
+    subgraph TGW_Hub ["🔀 Transit Gateway Hub (Account 1 Shared)"]
+        TGW["AWS Transit Gateway"]
+    end
+
+    subgraph CoreVPC ["🔴 Account 1: Test Core VPC (10.50.0.0/16)"]
+        subgraph PubSub ["Public Subnets (10.50.1.0/24 & 10.50.2.0/24)"]
+            NAT["2x NAT Gateways"]
+            IGW["Internet Gateway"]
+        end
+
+        subgraph AppSub ["Private App Subnets (10.50.10.0/24 & 10.50.20.0/24)"]
+            EKS_Test["EKS Worker Nodes (2x t4g.medium)"]
+        end
+
+        subgraph DBSub ["Isolated Database Subnets (10.50.100.0/24 & 10.50.200.0/24)"]
+            RDS_Test[("RDS MySQL Single-AZ (Port 3306)")]
+            Redis_Test[("Redis Single-Node (Port 6379)")]
+            MQ_Test[("Amazon MQ Single Broker (Port 5671)")]
+        end
+    end
+
+    TestUser --> EntryNLB
+    EntryNLB --> FargateProxy
+    FargateProxy -->|TGW Attachment Entry| TGW
+    TGW -->|TGW Attachment Core| EKS_Test
+    EKS_Test -->|Port 3306| RDS_Test
+    EKS_Test -->|Port 6379| Redis_Test
+    EKS_Test -->|Port 5671| MQ_Test
+    EKS_Test -->|Outbound 0.0.0.0/0| NAT
+    NAT --> IGW
+```
+
+#### 🚦 Phân tích Tuyến đường di chuyển Traffic (Traffic Routing Table Flow)
+
+| Tuyến Đường Traffic | Điểm Xuất Phát | Điểm Đến | Routing Path & Giao Thức | Quy Tắc Kiểm Soát An Ninh |
+| :--- | :--- | :--- | :--- | :--- |
+| **Inbound Entry Traffic** | External Client | Fargate Proxy | Internet ➔ Entry Public NLB (`10.40.1.0/24`) ➔ Fargate Proxy Task (`10.40.10.0/24`) | Entry NLB tiếp nhận HTTP/HTTPS; chỉ cho phép forward vào Fargate Proxy Security Group. |
+| **Cross-Account Ingress** | Fargate Proxy (Account 2) | EKS Test (Account 1) | Fargate Task ➔ TGW Attachment ➔ TGW Hub ➔ Test Core VPC Private App Subnets | Route Table quy định `10.50.0.0/16` qua `tgw-xxxx`. SG EKS chấp nhận Ingress từ `10.40.0.0/16`. |
+| **Private App to Data Layer** | EKS Worker Nodes / Pods | RDS / Redis / MQ | EKS Nodes (`10.50.10.0/24`, `10.50.20.0/24`) ➔ VPC Internal Route ➔ DB Subnets (`10.50.100.0/24`, `10.50.200.0/24`) | DB Subnet Tier **không gắn IGW/NAT Gateway**. DB Security Groups chỉ mở port cho Private App Subnets. |
+| **Outbound Egress Traffic** | EKS Worker Nodes | Public Internet / ECR | EKS Nodes ➔ Route Table `0.0.0.0/0` trỏ về NAT Gateway (`10.50.1.0/24`) ➔ IGW ➔ Internet | Đảm bảo máy chủ EKS không gán Public IP, an toàn khi cập nhật packages hoặc kéo container images. |
 
 ---
 

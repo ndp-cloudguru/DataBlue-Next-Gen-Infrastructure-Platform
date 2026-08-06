@@ -60,6 +60,21 @@ flowchart TB
     style SecurityObservability fill:#F3E8FF,stroke:#9333EA,stroke-width:2px;
 ```
 
+### 1.1 Chi tiết Kết nối, Đường đi Traffic & Phân lớp Mạng (High-Scale Network Topology & Traffic Paths)
+
+Scenario 3 thiết kế cho mô hình High-Scale HA với băng thông lớn, phân tách mạng theo 4 lớp độc lập:
+
+#### 🚦 Phân tích Luồng Traffic & Routing Path
+
+| Luồng Traffic | Điểm Bắt đầu | Điểm Đến | Tuyến đường & Giao thức | Quy tắc Bảo mật & Isolation |
+| :--- | :--- | :--- | :--- | :--- |
+| **1. Edge to EKS Karpenter Nodes** | Mobile / Web Clients | EKS Pods (Compute Tier `10.100.10.0/24`) | Client ➔ Route 53 GeoDNS ➔ Cloudflare WAF ➔ Dual Public NLBs ➔ Karpenter Auto-scaling Nodes | Public NLBs phân tải đều sang 3 AZs; Ingress Controllers tiếp nhận TLS termination. |
+| **2. Microservices to Data Cluster** | Karpenter Worker Pods | Aurora / Redis Sharded / DocDB | Pods (`10.100.10.0..30.0/24`) ➔ Direct Subnet Routing ➔ Dedicated DB Subnets (`10.100.100.0/24`) | DB Subnets **ngăn cách hoàn toàn với Internet (No IGW/NAT)**. SG chấp nhận Port 3306, 6379, 27017 từ App Subnets. |
+| **3. Observability Log/Metric Streaming** | FluentBit & Prometheus Pods | OpenSearch & Thanos TSDB | Worker Pods ➔ High-Scale Transit Gateway Hub ➔ Observability Subnets (`10.300.0.0/16`) | Luồng log/metric được mã hóa TLS và chuyển qua TGW Hub riêng biệt để không ảnh hưởng ứng dụng chính. |
+| **4. Egress Traffic Multi-AZ NAT** | EKS Nodes / Pods | External APIs / S3 | Worker Nodes ➔ Private Route Table (`0.0.0.0/0`) ➔ 3x High-Throughput NAT Gateways (1 per AZ) ➔ IGW | NAT Gateways đặt tại 3 AZs đảm bảo không sinh nghẽn cross-AZ egress bandwidth. |
+
+---
+
 ## 2. Pre-Deployment Service Quotas Audit & Cross-Checking
 
 Trước khi thực thi `terraform apply`, thực hiện kiểm tra Service Quotas để đảm bảo không bị thiếu vCPU/EIP khi chạy cụm High-Scale HA.

@@ -32,8 +32,11 @@ module "eks" {
   # Initial Managed NodeGroup for System Addons (CoreDNS, kube-proxy, aws-node, Karpenter)
   eks_managed_node_groups = {
     initial_system = {
-      name           = "${var.cluster_name}-initial-nodes"
-      instance_types = var.node_instance_types
+      name                     = "${var.cluster_name}-initial-nodes"
+      iam_role_name            = "${var.cluster_name}-sys-role"
+      iam_role_use_name_prefix = false
+      ami_type                 = "AL2023_ARM_64_STANDARD"
+      instance_types           = var.node_instance_types
       capacity_type  = var.capacity_type
 
       min_size     = var.min_size

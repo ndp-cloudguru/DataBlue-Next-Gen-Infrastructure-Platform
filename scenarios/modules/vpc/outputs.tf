@@ -32,7 +32,7 @@ output "database_subnet_ids" {
 
 output "db_subnet_group_name" {
   description = "Database Subnet Group name for RDS MySQL & DocumentDB"
-  value       = aws_db_subnet_group.this.name
+  value       = try(aws_db_subnet_group.this[0].name, null)
 }
 
 output "nat_public_ips" {

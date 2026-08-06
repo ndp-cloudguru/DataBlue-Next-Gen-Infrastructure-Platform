@@ -10,7 +10,7 @@
 resource "random_password" "mq_password" {
   length           = 24
   special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  override_special = "!#$&*()_+-=[]{}|<>?"
 }
 
 # 2. Security Group for RabbitMQ (Ports 5671 AMQPS & 15671 HTTPS Web UI)
@@ -49,9 +49,10 @@ resource "aws_security_group" "mq_sg" {
 resource "aws_mq_broker" "this" {
   broker_name = var.broker_name
 
-  engine_type        = "RabbitMQ"
-  engine_version     = "3.13"
-  host_instance_type = var.host_instance_type
+  engine_type                 = "RabbitMQ"
+  engine_version              = "3.13"
+  auto_minor_version_upgrade  = true
+  host_instance_type          = var.host_instance_type
   deployment_mode    = var.deployment_mode
 
   publicly_accessible = false # Zero public accessibility

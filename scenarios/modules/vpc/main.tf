@@ -180,6 +180,7 @@ resource "aws_route_table_association" "database" {
 
 # 11. Database Subnet Group for RDS MySQL / DocumentDB / ElastiCache
 resource "aws_db_subnet_group" "this" {
+  count      = length(var.database_subnet_cidrs) > 0 ? 1 : 0
   name       = "databue-${lower(var.environment)}-db-subnet-group"
   subnet_ids = aws_subnet.database[*].id
 

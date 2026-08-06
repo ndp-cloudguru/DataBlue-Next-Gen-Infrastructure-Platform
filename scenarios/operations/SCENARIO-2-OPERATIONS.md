@@ -103,6 +103,92 @@ scenarios/
     └── terraform.tfvars                    # Giá trị biến thực tế Production
 ```
 
+### 1.3 Chi tiết Kết nối, Đường đi Traffic & Giao tiếp giữa các Lớp mạng (Network Topology & Traffic Path)
+
+Hệ thống được thiết kế theo mô hình **Zero-Trust Multi-Tier Network Isolation** kết hợp với **Cross-Account Transit Gateway Hub**. Traffic được phân luồng nghiêm ngặt theo các lớp mạng riêng biệt:
+
+```mermaid
+flowchart TD
+    subgraph External ["🌐 Public Internet & Edge Tier"]
+        Client["📱 End-User / Mobile Client"]
+        CF["🛡️ Cloudflare WAF & Edge Network"]
+    end
+
+    subgraph EntryAccountA ["🏢 Account 2: Prod Entry A (10.20.0.0/16)"]
+        subgraph PubSubA ["Public Subnets (10.20.1.0/24..3.0/24)"]
+            NLB_A["Public Network Load Balancer A"]
+        end
+        subgraph AppSubA ["Private App Subnets (10.20.10.0/24..30.0/24)"]
+            Envoy_A["Envoy Proxy (ECS Fargate Task A)"]
+        end
+    end
+
+    subgraph EntryAccountB ["🏢 Account 3: Prod Entry B (10.30.0.0/16)"]
+        subgraph PubSubB ["Public Subnets (10.30.1.0/24..3.0/24)"]
+            NLB_B["Public Network Load Balancer B"]
+        end
+        subgraph AppSubB ["Private App Subnets (10.30.10.0/24..30.0/24)"]
+            Envoy_B["Envoy Proxy (ECS Fargate Task B)"]
+        end
+    end
+
+    subgraph CoreAccount ["🔴 Account 1: Prod Core (10.10.0.0/16)"]
+        subgraph TGW_Hub ["🔀 Central Transit Gateway Hub"]
+            TGW["AWS Transit Gateway Hub"]
+        end
+
+        subgraph PubSubCore ["Public Subnets Core (10.10.1.0/24..3.0/24)"]
+            NAT["3x NAT Gateways (Multi-AZ Egress)"]
+            IGW["Internet Gateway"]
+        end
+
+        subgraph AppSubCore ["Private App Subnets Core (10.10.10.0/24..30.0/24)"]
+            EKS_Nodes["EKS Worker Nodes (3x m7g.large)"]
+            Nacos["Nacos Registry ClusterIP"]
+        end
+
+        subgraph DBSubCore ["Isolated Database Subnets Core (10.10.100.0/24..120.0/24)"]
+            RDS[("RDS MySQL Multi-AZ (Port 3306)")]
+            Redis[("ElastiCache Redis 2-Node (Port 6379)")]
+            MQ[("Amazon MQ RabbitMQ (Port 5671)")]
+        end
+    end
+
+    Client --> CF
+    CF --> NLB_A
+    CF --> NLB_B
+    NLB_A --> Envoy_A
+    NLB_B --> Envoy_B
+    Envoy_A -->|TGW Attachment 1| TGW
+    Envoy_B -->|TGW Attachment 2| TGW
+    TGW -->|TGW Attachment Core| EKS_Nodes
+    EKS_Nodes --> Nacos
+    EKS_Nodes -->|Port 3306| RDS
+    EKS_Nodes -->|Port 6379| Redis
+    EKS_Nodes -->|Port 5671| MQ
+    EKS_Nodes -->|Outbound 0.0.0.0/0| NAT
+    NAT --> IGW
+```
+
+#### 🚦 Phân tích Luồng di chuyển của Traffic (Traffic Paths)
+
+| Luồng Traffic | Điểm Bắt đầu (Origin) | Điểm Đến (Destination) | Tuyến đường & Giao thức (Routing Path) | Quy tắc Bảo mật & Kiểm soát Access |
+| :--- | :--- | :--- | :--- | :--- |
+| **1. Inbound External Traffic** | User Client trên Internet | Envoy Proxy (Account 2/3) | Client ➔ Cloudflare WAF ➔ Public NLB (Port 80/443) ➔ ECS Fargate Proxy (Private App Subnet) | NLB nằm ở Public Subnet; chỉ mở Port 80/443 tới Target Group IP của Fargate Task. |
+| **2. Cross-Account Proxy to Core** | Envoy Proxy (Entry A/B) | EKS Microservices (Account 1) | Fargate Task ➔ TGW Attachment ➔ Transit Gateway Router ➔ Core Private App Subnet ➔ EKS Ingress Controller | Route Table quy định `10.10.0.0/16` trỏ qua `tgw-xxxx`. SG EKS cho phép Ingress từ `10.20.0.0/16` & `10.30.0.0/16`. |
+| **3. App to Data Store Isolation** | EKS Worker Nodes / Pods | RDS / Redis / RabbitMQ | EKS Pods (Private App Subnets `10.10.10.0..30.0/24`) ➔ Direct VPC Route ➔ DB Tier (`10.10.100.0..120.0/24`) | DB Tier **không có Route out Internet (No IGW/NAT)**. DB Security Groups chỉ chấp nhận Ingress từ Private App Subnet CIDRs. |
+| **4. Outbound Egress Traffic** | EKS Nodes / Fargate Tasks | Internet (APIs/ECR/S3) | Worker Nodes ➔ Private App Route Table (`0.0.0.0/0` ➔ NAT Gateway) ➔ NAT Gateway ở Public Subnet ➔ Internet Gateway | Đảm bảo tính riêng tư: Máy chủ ứng dụng không gán Public IP, chỉ giao tiếp ra ngoài qua NAT EIPs tĩnh. |
+
+#### 🛡️ Ma trận Quy tắc Bảo mật giữa các Lớp mạng (Security Group Ingress/Egress Matrix)
+
+| Security Group | Lớp Mạng Sở Hữu | Port / Giao thức Hợp lệ | Source Allowed (Nguồn Chấp Nhận) | Mục đích Kết nối |
+| :--- | :--- | :--- | :--- | :--- |
+| **`fargate_proxy_sg_a/b`** | Entry A/B Private App Subnets | `Port 80` (HTTP) | Public NLB Subnets (`10.20.1.0/24`, `10.30.1.0/24`) | Nhận traffic được forward từ Public Load Balancers |
+| **`eks_node_sg`** | Core Private App Subnets | `Port 443`, `8443`, `9443`, `10250` | Entry A CIDR (`10.20.0.0/16`) & Entry B CIDR (`10.30.0.0/16`) | Nhận traffic ứng dụng từ Proxy Nodes qua TGW & Kubelet Control Plane |
+| **`rds_sg`** | Core Isolated DB Subnets | `Port 3306` (MySQL TLS) | Private App Subnet CIDRs (`10.10.10.0/24`, `10.10.20.0/24`, `10.10.30.0/24`) | Lưu trữ dữ liệu csdl Nacos & Microservices |
+| **`redis_sg`** | Core Isolated DB Subnets | `Port 6379` (Redis AUTH) | Private App Subnet CIDRs (`10.10.10.0/24`, `10.10.20.0/24`, `10.10.30.0/24`) | Cache dữ liệu RAM phiên làm việc & Rate Limiting |
+| **`mq_sg`** | Core Isolated DB Subnets | `Port 5671` (AMQPS TLS) | Private App Subnet CIDRs (`10.10.10.0/24`, `10.10.20.0/24`, `10.10.30.0/24`) | Event Buffer & Hàng đợi Message Broker giữa các Services |
+
 ---
 
 ## 2. Pre-Deployment Prerequisites & Environment Setup
@@ -371,8 +457,8 @@ prod_core_private_app_subnet_ids     = [
 ]
 prod_core_database_subnet_ids        = [
   "subnet-0dba111111111", # 10.10.100.0/24 (ap-southeast-1a)
-  "subnet-0dbb222222222", # 10.10.200.0/24 (ap-southeast-1b)
-  "subnet-0dbc333333333"  # 10.10.300.0/24 (ap-southeast-1c)
+  "subnet-0dbb222222222", # 10.10.110.0/24 (ap-southeast-1b)
+  "subnet-0dbc333333333"  # 10.10.120.0/24 (ap-southeast-1c)
 ]
 ```
 
@@ -387,7 +473,7 @@ prod_core_database_subnet_ids        = [
 | **`transit_gateway_attachment_*_id`**| TGW VPC Attachments kết nối Core, Entry A & Entry B | Cross-Account VPC Connectivity Check (`Section 5.1`) |
 | **`prod_core_public_subnet_ids`** | Lớp Public Subnets Core 3-AZ (`10.10.1.0..3.0/24`) | Nơi đặt 3 Public NAT Gateways ra Internet |
 | **`prod_core_private_app_subnet_ids`**| Lớp Private App Subnets Core (`10.10.10.0..30.0/24`) | Nơi đặt 3 Worker Nodes EKS, Nacos & ArgoCD |
-| **`prod_core_database_subnet_ids`** | Lớp Isolated DB Subnets Core (`10.10.100.0..300.0/24`)| Nơi đặt RDS MySQL Multi-AZ, Redis & RabbitMQ |
+| **`prod_core_database_subnet_ids`** | Lớp Isolated DB Subnets Core (`10.10.100.0..120.0/24`)| Nơi đặt RDS MySQL Multi-AZ, Redis & RabbitMQ |
 | **`eks_cluster_name` & `endpoint`** | Cluster Name & Control Plane EKS (3x m7g.large) | Cấu hình `aws eks update-kubeconfig` (`Section 4.1`) |
 | **`ecr_repository_urls`** | Repositories Amazon ECR (Tags IMMUTABLE) | Docker Login, Build & Push Images (`Section 4.3`) |
 | **`rds_mysql_endpoint`** | Endpoint csdl RDS MySQL Multi-AZ (`db.t4g.xlarge`) | Cấu hình Nacos (`Section 4.4`) & MySQL Test (`Section 5.3`) |
