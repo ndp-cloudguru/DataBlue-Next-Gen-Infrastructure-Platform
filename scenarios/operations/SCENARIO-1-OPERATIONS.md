@@ -175,6 +175,44 @@ aws sts get-caller-identity --profile datablue-test-entry
 export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile datablue-test-core --query "Account" --output text)
 ```
 
+### 2.3 Kiểm tra AWS Service Quotas & Đối chiếu Yêu cầu Hạ tầng Scenario 1
+
+Trước khi thực thi `terraform apply`, thực hiện đối chiếu Service Quotas để đảm bảo tài khoản có đủ tài nguyên khởi tạo:
+
+```bash
+# 1. Kiểm tra Quota vCPU On-Demand Standard (Yêu cầu >= 4 vCPUs cho 2x t4g.medium EKS Worker Nodes)
+aws service-quotas get-service-quota \
+  --service-code ec2 \
+  --quota-code L-1216C47A \
+  --region ap-southeast-1 \
+  --profile datablue-test-core \
+  --query "Quota.[QuotaName, Value]"
+
+# 2. Kiểm tra Quota Elastic IP (Yêu cầu 1-2 EIPs cho NAT Gateways)
+aws service-quotas get-service-quota \
+  --service-code ec2 \
+  --quota-code L-0263D0A3 \
+  --region ap-southeast-1 \
+  --profile datablue-test-core \
+  --query "Quota.[QuotaName, Value]"
+
+# 3. Kiểm tra Quota VPCs per Region (Yêu cầu 1 VPC cho Test Core & 1 VPC cho Test Entry)
+aws service-quotas get-service-quota \
+  --service-code vpc \
+  --quota-code L-F678F1CE \
+  --region ap-southeast-1 \
+  --profile datablue-test-core \
+  --query "Quota.[QuotaName, Value]"
+```
+
+#### 📊 Bảng Đối chiếu Quota Hạn Ngạch & Nhu cầu Hạ tầng Scenario 1
+
+| Dịch vụ AWS | Mã Quota Code | Yêu cầu Scenario 1 (Required) | Hạn ngạch Mặc định | Đánh giá Khả thi |
+| :--- | :--- | :---: | :---: | :---: |
+| **EC2 On-Demand Standard vCPUs** | `L-1216C47A` | **4 vCPUs** (2x t4g.medium) | 8.0 – 32.0 vCPUs | ✅ Đạt |
+| **Elastic IP (EIP)** | `L-0263D0A3` | **1 - 2 EIPs** (NAT Gateways) | 5 EIPs | ✅ Đạt |
+| **VPCs per Region** | `L-F678F1CE` | **1 VPC** / Account | 5 VPCs | ✅ Đạt |
+
 ---
 
 ## 3. Infrastructure Provisioning & Real-Time Monitoring
@@ -184,23 +222,53 @@ export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile datablue-test-core
 # 1. Chuyển vào thư mục chứa mã nguồn Terraform
 cd ${TERRAFORM_CODE_PATH}
 
-# 2. Khởi tạo Terraform & Backend (S3 + DynamoDB Lock)
+# 2. Khởi tạo S3 Bucket & DynamoDB Lock Table (Thực hiện nếu chưa có sẵn Backend S3)
+aws s3api create-bucket \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --region ap-southeast-1 \
+  --create-bucket-configuration LocationConstraint=ap-southeast-1 \
+  --profile datablue-test-core
+
+aws s3api put-bucket-versioning \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --versioning-configuration Status=Enabled \
+  --profile datablue-test-core
+
+aws s3api put-bucket-encryption \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --server-side-encryption-configuration '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}' \
+  --profile datablue-test-core
+
+aws s3api put-public-access-block \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --public-access-block-configuration "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true" \
+  --profile datablue-test-core
+
+aws dynamodb create-table \
+  --table-name datablue-test-tflocks \
+  --attribute-definitions AttributeName=LockID,AttributeType=S \
+  --key-schema AttributeName=LockID,KeyType=HASH \
+  --billing-mode PAY_PER_REQUEST \
+  --region ap-southeast-1 \
+  --profile datablue-test-core
+
+# 3. Khởi tạo Terraform & Backend (S3 + DynamoDB Lock)
 terraform init \
   -backend-config="bucket=datablue-tfstate-ap-southeast-1" \
   -backend-config="key=env/test/terraform.tfstate" \
   -backend-config="region=ap-southeast-1" \
   -backend-config="dynamodb_table=datablue-test-tflocks"
 
-# 3. Kiểm tra cú pháp và tính hợp lệ của HCL
+# 4. Kiểm tra cú pháp và tính hợp lệ của HCL
 terraform validate
 
-# 4. Tự động định dạng lại code
+# 5. Tự động định dạng lại code
 terraform fmt
 
-# 5. Xem trước kế hoạch thay đổi hạ tầng
+# 6. Xem trước kế hoạch thay đổi hạ tầng
 terraform plan -out=tfplan-test
 
-# 6. Triển khai hạ tầng (sau khi kế hoạch được phê duyệt)
+# 7. Triển khai hạ tầng (sau khi kế hoạch được phê duyệt)
 terraform apply tfplan-test
 ```
 

@@ -183,6 +183,53 @@ aws sts get-caller-identity --profile datablue-prod-entry-b
 export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile datablue-prod-core --query "Account" --output text)
 ```
 
+### 2.3 Kiểm tra AWS Service Quotas & Đối chiếu Yêu cầu Hạ tầng (Pre-Apply Quotas Audit)
+
+Trước khi thực thi `terraform apply`, bắt buộc kiểm tra các Service Quotas trên tài khoản AWS để đảm bảo hạ tầng không bị gián đoạn do vượt ngưỡng giới hạn tài nguyên:
+
+```bash
+# 1. Kiểm tra Quota vCPU On-Demand Standard (Yêu cầu >= 6 vCPUs cho 3x m7g.large EKS Worker Nodes)
+aws service-quotas get-service-quota \
+  --service-code ec2 \
+  --quota-code L-1216C47A \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core \
+  --query "Quota.[QuotaName, Value]"
+
+# 2. Kiểm tra Quota Elastic IP (Yêu cầu 3 EIPs cho 3-AZ NAT Gateways tại Account 1 Core)
+aws service-quotas get-service-quota \
+  --service-code ec2 \
+  --quota-code L-0263D0A3 \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core \
+  --query "Quota.[QuotaName, Value]"
+
+# 3. Kiểm tra Quota VPCs per Region (Yêu cầu 1 VPC trên mỗi Account 1, 2, 3)
+aws service-quotas get-service-quota \
+  --service-code vpc \
+  --quota-code L-F678F1CE \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core \
+  --query "Quota.[QuotaName, Value]"
+
+# 4. Kiểm tra Quota NAT Gateways per AZ (Yêu cầu 3 NAT Gateways cho 3-AZ Prod Core)
+aws service-quotas get-service-quota \
+  --service-code vpc \
+  --quota-code L-FE5A405D \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core \
+  --query "Quota.[QuotaName, Value]"
+```
+
+#### 📊 Bảng Đối chiếu Quota Hạn Ngạch & Nhu cầu Hạ tầng Scenario 2
+
+| Dịch vụ AWS | Mã Quota Code | Yêu cầu Scenario 2 (Required) | Hạn ngạch Mặc định | Đánh giá Khả thi |
+| :--- | :--- | :---: | :---: | :---: |
+| **EC2 On-Demand Standard vCPUs** | `L-1216C47A` | **6 vCPUs** (3x m7g.large) | 8.0 – 32.0 vCPUs | ✅ Đạt |
+| **Elastic IP (EIP)** | `L-0263D0A3` | **3 EIPs** (3 NAT Gateways) | 5 EIPs | ✅ Đạt |
+| **VPCs per Region** | `L-F678F1CE` | **1 VPC** / Account | 5 VPCs | ✅ Đạt |
+| **NAT Gateways per AZ** | `L-FE5A405D` | **1 NAT GW** / AZ (Tổng 3) | 5 NAT GWs / AZ | ✅ Đạt |
+
 ---
 
 ## 3. Infrastructure Provisioning & Real-Time Monitoring
@@ -192,7 +239,37 @@ export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile datablue-prod-core
 # 1. Chuyển vào thư mục chứa mã nguồn Terraform Scenario 2
 cd ${TERRAFORM_CODE_PATH}
 
-# 2. Khởi tạo Terraform & Backend (S3 + DynamoDB Lock)
+# 2. Khởi tạo S3 Bucket & DynamoDB Lock Table (Thực hiện nếu chưa có sẵn Backend S3)
+aws s3api create-bucket \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --region ap-southeast-1 \
+  --create-bucket-configuration LocationConstraint=ap-southeast-1 \
+  --profile datablue-prod-core
+
+aws s3api put-bucket-versioning \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --versioning-configuration Status=Enabled \
+  --profile datablue-prod-core
+
+aws s3api put-bucket-encryption \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --server-side-encryption-configuration '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}' \
+  --profile datablue-prod-core
+
+aws s3api put-public-access-block \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --public-access-block-configuration "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true" \
+  --profile datablue-prod-core
+
+aws dynamodb create-table \
+  --table-name datablue-prod-tflocks \
+  --attribute-definitions AttributeName=LockID,AttributeType=S \
+  --key-schema AttributeName=LockID,KeyType=HASH \
+  --billing-mode PAY_PER_REQUEST \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core
+
+# 3. Khởi tạo Terraform & Backend (S3 + DynamoDB Lock)
 terraform init \
   -backend-config="bucket=datablue-tfstate-ap-southeast-1" \
   -backend-config="key=env/prod/terraform.tfstate" \

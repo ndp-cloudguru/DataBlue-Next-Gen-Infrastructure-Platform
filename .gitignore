@@ -1,0 +1,21 @@
+# Local .terraform directories
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan*
+.terraform.tfstate.lock.info
+
+# macOS & OS artifacts
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Credentials & secrets
+*.pem
+*.key
+*accessKeys.csv
+*credentials.csv

@@ -60,24 +60,87 @@ flowchart TB
     style SecurityObservability fill:#F3E8FF,stroke:#9333EA,stroke-width:2px;
 ```
 
+## 2. Pre-Deployment Service Quotas Audit & Cross-Checking
+
+Trước khi thực thi `terraform apply`, thực hiện kiểm tra Service Quotas để đảm bảo không bị thiếu vCPU/EIP khi chạy cụm High-Scale HA:
+
+```bash
+# 1. Kiểm tra Quota vCPU On-Demand Standard (Yêu cầu >= 112 vCPUs cho Karpenter Auto-scaling ~28 Nodes)
+aws service-quotas get-service-quota \
+  --service-code ec2 \
+  --quota-code L-1216C47A \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core \
+  --query "Quota.[QuotaName, Value]"
+
+# 2. Kiểm tra Quota Elastic IP (Yêu cầu 3 EIPs cho 3-AZ High-Scale NAT Gateways)
+aws service-quotas get-service-quota \
+  --service-code ec2 \
+  --quota-code L-0263D0A3 \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core \
+  --query "Quota.[QuotaName, Value]"
+```
+
+#### 📊 Bảng Đối chiếu Quota Hạn Ngạch Scenario 3
+
+| Dịch vụ AWS | Mã Quota Code | Yêu cầu Scenario 3 (Required) | Hạn ngạch Mặc định | Đánh giá & Yêu cầu Quota Increase |
+| :--- | :--- | :---: | :---: | :--- |
+| **EC2 On-Demand Standard vCPUs** | `L-1216C47A` | **112 vCPUs** (28x Nodes) | 8 - 32 vCPUs | ⚠️ **Cần gửi AWS Ticket tăng quota lên >= 128 vCPUs** |
+| **Elastic IP (EIP)** | `L-0263D0A3` | **3 EIPs** (3 NAT Gateways) | 5 EIPs | ✅ Đạt |
+
 ---
 
-## 2. Terraform Provisioning Workflow
+## 3. Terraform Provisioning Workflow
 
 ```bash
 # 1. Navigate to Scenario 3 directory
 cd scenarios/scenario-3-prod-high-scale-ha
 
-# 2. Initialize Terraform modules and backend
-terraform init
+# 2. Khởi tạo S3 State Bucket & DynamoDB Lock Table (Thực hiện nếu chưa có sẵn Backend S3)
+aws s3api create-bucket \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --region ap-southeast-1 \
+  --create-bucket-configuration LocationConstraint=ap-southeast-1 \
+  --profile datablue-prod-core
 
-# 3. Validate configuration
+aws s3api put-bucket-versioning \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --versioning-configuration Status=Enabled \
+  --profile datablue-prod-core
+
+aws s3api put-bucket-encryption \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --server-side-encryption-configuration '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}' \
+  --profile datablue-prod-core
+
+aws s3api put-public-access-block \
+  --bucket datablue-tfstate-ap-southeast-1 \
+  --public-access-block-configuration "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true" \
+  --profile datablue-prod-core
+
+aws dynamodb create-table \
+  --table-name datablue-prod-ha-tflocks \
+  --attribute-definitions AttributeName=LockID,AttributeType=S \
+  --key-schema AttributeName=LockID,KeyType=HASH \
+  --billing-mode PAY_PER_REQUEST \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core
+
+# 3. Initialize Terraform modules and backend
+terraform init \
+  -backend-config="bucket=datablue-tfstate-ap-southeast-1" \
+  -backend-config="key=env/prod-ha/terraform.tfstate" \
+  -backend-config="region=ap-southeast-1" \
+  -backend-config="dynamodb_table=datablue-prod-ha-tflocks"
+
+# 4. Validate configuration
 terraform validate
 
-# 4. Generate execution plan
+# 5. Generate execution plan
 terraform plan -out=tfplan-prod-ha
 
-# 5. Apply configuration (GATE-07 CAB authorization required)
+# 6. Apply configuration (GATE-07 CAB authorization required)
 terraform apply tfplan-prod-ha
 ```
 
