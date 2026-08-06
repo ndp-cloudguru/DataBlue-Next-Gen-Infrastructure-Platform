@@ -123,6 +123,7 @@ module "prod_entry_a_vpc" {
 
   public_subnet_cidrs      = var.prod_entry_a_public_subnet_cidrs
   private_app_subnet_cidrs = var.prod_entry_a_private_app_subnet_cidrs
+  database_subnet_cidrs    = []
 
   eks_cluster_name = "Prod-Entry-Proxy-A"
 }
@@ -138,6 +139,7 @@ module "prod_entry_b_vpc" {
 
   public_subnet_cidrs      = var.prod_entry_b_public_subnet_cidrs
   private_app_subnet_cidrs = var.prod_entry_b_private_app_subnet_cidrs
+  database_subnet_cidrs    = []
 
   eks_cluster_name = "Prod-Entry-Proxy-B"
 }

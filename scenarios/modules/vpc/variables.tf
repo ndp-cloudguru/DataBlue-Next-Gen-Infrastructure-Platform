@@ -33,6 +33,7 @@ variable "private_app_subnet_cidrs" {
 variable "database_subnet_cidrs" {
   description = "List of CIDR blocks for Isolated Database Subnets (hosting RDS, Redis, MQ, DocumentDB with ZERO internet egress)"
   type        = list(string)
+  default     = []
 }
 
 variable "eks_cluster_name" {
