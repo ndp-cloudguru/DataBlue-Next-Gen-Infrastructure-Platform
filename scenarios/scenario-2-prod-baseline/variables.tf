@@ -72,7 +72,7 @@ variable "prod_core_private_app_subnet_cidrs" {
 variable "prod_core_database_subnet_cidrs" {
   description = "Isolated DB Subnet CIDRs for Account 1 Prod Core (RDS, Redis, MQ)"
   type        = list(string)
-  default     = ["10.10.100.0/24", "10.10.200.0/24", "10.10.300.0/24"]
+  default     = ["10.10.100.0/24", "10.10.110.0/24", "10.10.120.0/24"]
 }
 
 # Account 2 Prod Entry A Subnet CIDRs
