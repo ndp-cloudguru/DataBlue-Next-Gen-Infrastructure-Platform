@@ -743,6 +743,36 @@ curl -i -v "http://${NLB_A_DNS}/health"
 curl -i -v "http://${NLB_B_DNS}/health"
 ```
 
+### 5.7 Kiểm thử Ingress & Service Public Trực tiếp từ EKS (Direct EKS Public Ingress & LB Verification)
+
+Trường hợp không dùng lớp Proxy Entry Account (Account 2/3) mà Public dịch vụ trực tiếp từ cụm EKS bằng AWS Load Balancer Controller:
+
+#### 1. Kiểm tra trạng thái AWS Load Balancer Controller
+```bash
+kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+```
+
+#### 2. Kiểm thử Direct Public AWS ALB Ingress từ EKS Pods
+```bash
+# Kiểm tra trạng thái Ingress & Hostname ALB do AWS Controller cấp phát
+kubectl get ingress -n datablue-prod
+
+DIRECT_ALB_DNS=$(kubectl get ingress datablue-direct-ingress -n datablue-prod -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+echo "🌐 Direct EKS ALB Ingress Endpoint: http://${DIRECT_ALB_DNS}"
+
+# Test HTTP Request trực tiếp vào EKS Microservice Pods
+curl -i -v "http://${DIRECT_ALB_DNS}/actuator/health"
+```
+
+#### 3. Kiểm thử Direct Public Service Type LoadBalancer (AWS NLB Layer 4)
+```bash
+# Kiểm tra Service type LoadBalancer và External IP / DNS
+kubectl get svc backend-service-public -n datablue-prod
+
+DIRECT_NLB_DNS=$(kubectl get svc backend-service-public -n datablue-prod -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+curl -i -v "http://${DIRECT_NLB_DNS}/"
+```
+
 ---
 
 ## 6. Monitoring, Disaster Recovery & Security Maintenance
