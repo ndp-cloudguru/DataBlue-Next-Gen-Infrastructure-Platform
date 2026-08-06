@@ -253,8 +253,8 @@ module "eks" {
   kms_key_arn = module.kms.key_arn
 
   node_instance_types = var.eks_node_instance_types # m7g.large Graviton3
-  desired_size        = 3                           # 3 Nodes across 3 AZs per TERRAFORM_PROD_EARLYSTART_PLANNING.md
-  min_size            = 3
+  desired_size        = 2                           # 2 Nodes (4 vCPUs) within current vCPU quota
+  min_size            = 2
   max_size            = 6
   capacity_type       = "ON_DEMAND"
 }
@@ -267,7 +267,7 @@ module "rds_mysql" {
   identifier           = "datablue-prod-mysql"
   vpc_id               = module.prod_core_vpc.vpc_id
   db_subnet_group_name = module.prod_core_vpc.db_subnet_group_name
-  allowed_cidr_blocks  = module.prod_core_vpc.private_app_subnet_ids
+  allowed_cidr_blocks  = var.prod_core_private_app_subnet_cidrs
   kms_key_arn          = module.kms.key_arn
 
   instance_class          = "db.t4g.xlarge" # 4 vCPU / 16GB RAM
@@ -287,10 +287,10 @@ module "elasticache_redis" {
   replication_group_id = "datablue-prod-redis"
   vpc_id               = module.prod_core_vpc.vpc_id
   subnet_ids           = module.prod_core_vpc.database_subnet_ids
-  allowed_cidr_blocks  = module.prod_core_vpc.private_app_subnet_ids
+  allowed_cidr_blocks  = var.prod_core_private_app_subnet_cidrs
   kms_key_arn          = module.kms.key_arn
 
-  node_type          = "cache.t4g.large" # 4 vCPU / 12.7GB RAM Primary/Replica
+  node_type          = "cache.m6g.large" # 2 vCPU / 6.38GB RAM Graviton2 Primary/Replica
   num_cache_clusters = 2
 }
 
@@ -302,7 +302,7 @@ module "amazon_mq_rabbitmq" {
   broker_name         = "datablue-prod-rabbitmq"
   vpc_id              = module.prod_core_vpc.vpc_id
   subnet_ids          = module.prod_core_vpc.database_subnet_ids
-  allowed_cidr_blocks = module.prod_core_vpc.private_app_subnet_ids
+  allowed_cidr_blocks = var.prod_core_private_app_subnet_cidrs
   kms_key_arn         = module.kms.key_arn
 
   host_instance_type = "mq.m5.small" # Active/Standby Cluster
