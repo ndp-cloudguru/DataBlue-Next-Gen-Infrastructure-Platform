@@ -185,8 +185,14 @@ export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile datablue-prod-core
 
 ### 2.3 Kiểm tra AWS Service Quotas & Đối chiếu Yêu cầu Hạ tầng (Pre-Apply Quotas Audit)
 
-Trước khi thực thi `terraform apply`, bắt buộc kiểm tra các Service Quotas trên tài khoản AWS để đảm bảo hạ tầng không bị gián đoạn do vượt ngưỡng giới hạn tài nguyên:
+Trước khi thực thi `terraform apply`, bắt buộc kiểm tra các Service Quotas trên tài khoản AWS để đảm bảo hạ tầng không bị gián đoạn do vượt ngưỡng giới hạn tài nguyên.
 
+#### Option 1: Chạy Script Tự động Kiểm tra & Báo cáo Quotas (Khuyên dùng)
+```bash
+./scenarios/operations/scripts/check_aws_quotas.sh --scenario 2 --profile datablue-prod-core --region ap-southeast-1
+```
+
+#### Option 2: Kiểm tra từng Quota thủ công bằng AWS CLI
 ```bash
 # 1. Kiểm tra Quota vCPU On-Demand Standard (Yêu cầu >= 6 vCPUs cho 3x m7g.large EKS Worker Nodes)
 aws service-quotas get-service-quota \

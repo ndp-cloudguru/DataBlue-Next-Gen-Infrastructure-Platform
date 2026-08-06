@@ -62,8 +62,14 @@ flowchart TB
 
 ## 2. Pre-Deployment Service Quotas Audit & Cross-Checking
 
-Trước khi thực thi `terraform apply`, thực hiện kiểm tra Service Quotas để đảm bảo không bị thiếu vCPU/EIP khi chạy cụm High-Scale HA:
+Trước khi thực thi `terraform apply`, thực hiện kiểm tra Service Quotas để đảm bảo không bị thiếu vCPU/EIP khi chạy cụm High-Scale HA.
 
+#### Option 1: Chạy Script Tự động Kiểm tra Quotas
+```bash
+./scenarios/operations/scripts/check_aws_quotas.sh --scenario 3 --profile datablue-prod-core --region ap-southeast-1
+```
+
+#### Option 2: Kiểm tra thủ công bằng AWS CLI
 ```bash
 # 1. Kiểm tra Quota vCPU On-Demand Standard (Yêu cầu >= 112 vCPUs cho Karpenter Auto-scaling ~28 Nodes)
 aws service-quotas get-service-quota \

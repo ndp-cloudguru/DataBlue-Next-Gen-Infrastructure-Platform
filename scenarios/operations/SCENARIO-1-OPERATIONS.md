@@ -177,8 +177,14 @@ export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile datablue-test-core
 
 ### 2.3 Kiểm tra AWS Service Quotas & Đối chiếu Yêu cầu Hạ tầng Scenario 1
 
-Trước khi thực thi `terraform apply`, thực hiện đối chiếu Service Quotas để đảm bảo tài khoản có đủ tài nguyên khởi tạo:
+Trước khi thực thi `terraform apply`, thực hiện đối chiếu Service Quotas để đảm bảo tài khoản có đủ tài nguyên khởi tạo.
 
+#### Option 1: Chạy Script Tự động Kiểm tra & Báo cáo Quotas (Khuyên dùng)
+```bash
+./scenarios/operations/scripts/check_aws_quotas.sh --scenario 1 --profile datablue-test-core --region ap-southeast-1
+```
+
+#### Option 2: Kiểm tra thủ công bằng AWS CLI
 ```bash
 # 1. Kiểm tra Quota vCPU On-Demand Standard (Yêu cầu >= 4 vCPUs cho 2x t4g.medium EKS Worker Nodes)
 aws service-quotas get-service-quota \

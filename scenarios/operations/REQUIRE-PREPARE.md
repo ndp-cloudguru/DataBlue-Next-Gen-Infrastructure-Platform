@@ -46,20 +46,80 @@ aws configure sso --profile datablue-shared-services
 aws sso login --profile datablue-test
 ```
 
-### 2.2 AWS Service Quotas Audit
-Verify AWS Service Quotas in your target AWS region (`us-east-1` / `us-west-2`):
+### 2.2 AWS Service Quotas Audit & Automated Checking
+
+Trước khi triển khai bất kỳ Scenario nào, bắt buộc thực hiện kiểm tra hạn ngạch Service Quotas trên các AWS Accounts:
+
+#### Option 1: Chạy Script Tự động Kiểm tra Quota
 ```bash
-# Verify EC2 Graviton vCPU Quota (m6g, c6g, r6g)
+# Kiểm tra Quotas cho Scenario 1 (Test Baseline)
+./scenarios/operations/scripts/check_aws_quotas.sh --scenario 1 --profile datablue-test-core --region ap-southeast-1
+
+# Kiểm tra Quotas cho Scenario 2 (Production Baseline)
+./scenarios/operations/scripts/check_aws_quotas.sh --scenario 2 --profile datablue-prod-core --region ap-southeast-1
+
+# Kiểm tra Quotas cho Scenario 3 (Production High-Scale HA)
+./scenarios/operations/scripts/check_aws_quotas.sh --scenario 3 --profile datablue-prod-core --region ap-southeast-1
+```
+
+#### Option 2: Kiểm tra Quota từng Dịch vụ bằng AWS CLI
+```bash
+# Kiểm tra Quota vCPU On-Demand Standard (Quota Code: L-1216C47A)
 aws service-quotas get-service-quota \
   --service-code ec2 \
   --quota-code L-1216C47A \
-  --region us-east-1
+  --region ap-southeast-1 \
+  --profile datablue-prod-core
 
-# Verify Elastic IP (EIP) Quota (Minimum 3 EIPs required for 3-AZ NAT Gateways)
+# Kiểm tra Quota Elastic IP / EIP (Quota Code: L-0263D0A3)
 aws service-quotas get-service-quota \
   --service-code ec2 \
-  --quota-code L-02A614F4 \
-  --region us-east-1
+  --quota-code L-0263D0A3 \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core
+```
+
+---
+
+### 2.3 Hướng dẫn Yêu cầu Nâng Hạn ngạch Quota từ AWS CLI (Root / Admin Account)
+
+Nếu kết quả kiểm tra báo thiếu Quotas (`❌ FAIL`), Quản trị viên (Root Account / Admin Profile) có thể gửi yêu cầu nâng Quotas trực tiếp qua AWS CLI mà không cần thao tác thủ công trên Console:
+
+#### A. Gửi Yêu cầu Nâng Quota (Request Quota Increase):
+```bash
+# 1. Yêu cầu nâng vCPU On-Demand Standard lên 16 vCPUs (Account Core)
+aws service-quotas request-service-quota-increase \
+  --service-code ec2 \
+  --quota-code L-1216C47A \
+  --desired-value 16 \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core
+
+# 2. Yêu cầu nâng vCPU cho cụm Scenario 3 High-Scale lên 128 vCPUs
+aws service-quotas request-service-quota-increase \
+  --service-code ec2 \
+  --quota-code L-1216C47A \
+  --desired-value 128 \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core
+
+# 3. Yêu cầu nâng Elastic IP (EIP) lên 10 IP
+aws service-quotas request-service-quota-increase \
+  --service-code ec2 \
+  --quota-code L-0263D0A3 \
+  --desired-value 10 \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core
+```
+
+#### B. Đối soát Trạng thái Yêu cầu Nâng Quota (Track Quota Increase Request Status):
+```bash
+# Xem lịch sử và trạng thái duyệt của AWS Support đối với các yêu cầu đã gửi
+aws service-quotas list-requested-service-quota-change-history \
+  --region ap-southeast-1 \
+  --profile datablue-prod-core \
+  --query "RequestedQuotas[*].[Id, QuotaName, DesiredValue, Status, Created]" \
+  --output table
 ```
 
 ---
@@ -72,7 +132,7 @@ Execute the automated shell script below to provision S3 State Buckets and Dynam
 #!/usr/bin/env bash
 set -euo pipefail
 
-REGION="us-east-1"
+REGION="ap-southeast-1"
 
 # 1. Create S3 Buckets for State Storage with KMS Encryption & Versioning
 for BUCKET in "datablue-test-tfstate-${REGION}" "datablue-prod-tfstate-${REGION}" "datablue-prod-ha-tfstate-${REGION}" "datablue-prod-dr-tfstate-${REGION}" "datablue-landing-zone-tfstate"; do
