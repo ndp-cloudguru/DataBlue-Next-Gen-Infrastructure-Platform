@@ -780,25 +780,118 @@ Trường hợp không sử dụng lớp Proxy Entry Account mà Public ứng d�
 kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
 ```
 
-#### 2. Kiểm thử Direct Public AWS ALB Ingress từ EKS Pods
+#### 2. Khởi tạo Sample Deployment & ClusterIP Service
 ```bash
-# Kiểm tra trạng thái Ingress & Hostname ALB do AWS Controller cấp phát
-kubectl get ingress -n datablue-test
+cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-demo
+  namespace: datablue-test
+  labels:
+    app: echo-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: echo-demo
+  template:
+    metadata:
+      labels:
+        app: echo-demo
+    spec:
+      containers:
+      - name: echo-demo
+        image: e2eteam/echoserver:v2.2
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-demo-svc
+  namespace: datablue-test
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: echo-demo
+EOF
+```
 
+#### 3. Kiểm thử Direct Public AWS ALB Ingress từ EKS Pods
+```bash
+# Tạo Ingress ALB Internet-Facing
+cat <<EOF | kubectl apply -f -
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: datablue-direct-ingress
+  namespace: datablue-test
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: echo-demo-svc
+            port:
+              number: 80
+EOF
+
+# Đợi ALB cấp phát Hostname & Kiểm thử Kết nối
+sleep 15
 DIRECT_ALB_DNS=$(kubectl get ingress datablue-direct-ingress -n datablue-test -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 echo "🌐 Direct EKS ALB Ingress Endpoint: http://${DIRECT_ALB_DNS}"
 
 # Test HTTP Request trực tiếp vào EKS Microservice Pods
-curl -i -v "http://${DIRECT_ALB_DNS}/actuator/health"
+curl -i -v "http://${DIRECT_ALB_DNS}/"
 ```
 
-#### 3. Kiểm thử Direct Public Service Type LoadBalancer (AWS NLB Layer 4)
+#### 4. Kiểm thử Direct Public Service Type LoadBalancer (AWS NLB Layer 4)
 ```bash
-# Kiểm tra Service type LoadBalancer và External IP / DNS
-kubectl get svc backend-service-public -n datablue-test
+# Tạo Service LoadBalancer NLB Internet-Facing
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service-public
+  namespace: datablue-test
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: echo-demo
+EOF
 
+# Kiểm tra Service type LoadBalancer và External IP / DNS
 DIRECT_NLB_DNS=$(kubectl get svc backend-service-public -n datablue-test -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+echo "🌐 Direct EKS NLB Endpoint: http://${DIRECT_NLB_DNS}"
 curl -i -v "http://${DIRECT_NLB_DNS}/"
+```
+
+#### 5. Lệnh Dọn dẹp Tài nguyên Kiểm thử (Cleanup)
+```bash
+kubectl delete ingress datablue-direct-ingress -n datablue-test
+kubectl delete svc backend-service-public echo-demo-svc -n datablue-test
+kubectl delete deployment echo-demo -n datablue-test
 ```
 
 ---
