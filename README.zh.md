@@ -69,6 +69,22 @@ datablue-nextgen-infra-platform/
 │   ├── README.md                                # 架构图索引与渲染指南
 │   ├── render.py                                # Python 自动渲染编译脚本
 │   └── src/                                     # 原始 .mmd 源码文件
+├── scenarios/                                   # 5 个场景的 Terraform 基础设施即代码 (IaC) 目录
+│   ├── README.md                                # 场景指南与 Terraform 执行流程
+│   ├── modules/                                 # 8 个生产级可复用 Terraform 核心模块
+│   │   ├── vpc/                                 # 3 层 VPC 网络 topology (Public, Private App, Isolated DB)
+│   │   ├── kms/                                 # AWS KMS 客户托管密钥 (CMK)
+│   │   ├── eks/                                 # Amazon EKS v1.30+ 控制平面、IRSA 与 Karpenter Roles
+│   │   ├── rds_mysql/                           # Amazon RDS MySQL Multi-AZ 具备 30 天 PITR 备份
+│   │   ├── elasticache_redis/                   # Amazon ElastiCache Redis 集群具备 TLS 与 Auth Token
+│   │   ├── amazon_mq_rabbitmq/                  # Amazon MQ RabbitMQ 3 节点 Quorum Broker
+│   │   ├── documentdb/                          # Amazon DocumentDB 3 节点集群 (MongoDB 兼容)
+│   │   └── opensearch/                          # Amazon OpenSearch Service Multi-AZ 集群
+│   ├── scenario-1-test-baseline/                # 场景 1: 标准非生产测试环境 ($1,600-$2,400/月)
+│   ├── scenario-2-prod-baseline/                # 场景 2: 生产基线环境 ($4,200-$6,100/月)
+│   ├── scenario-3-prod-high-scale-ha/           # 场景 3: 生产大规模高可用环境 ($7,200-$10,500/月)
+│   ├── scenario-4-prod-cross-region-dr/         # 场景 4: 生产跨区域灾难恢复 DR ($10,000-$14,800/月)
+│   └── scenario-5-enterprise-multi-account/     # 场景 5: 企业级多账号隔离架构 ($12,000-$18,500/月)
 └── docs/
     ├── en/                                      # 英文文档树 (58 份 Markdown 文档)
     ├── vi/                                      # 越南语文档树 (58 份 Markdown 文档)

@@ -52,7 +52,9 @@
 ---
 
 ### `WP-005`: 测试 EKS 控制平面与工作节点组建设
+* **规划标签**: `TERRAFORM_TEST_PLANNING`
 * **描述**: 在 `DataBlue-Test-Account` 中跨 3 可用区部署专有的测试 EKS 集群 (`v1.30+`)。
+* **预估时长**: **5 个工作日** (5 Days)。
 * **关联需求**: [`BUS-001`](../01-requirements/REQUIREMENTS-REGISTER.md), [`FUN-001`](../01-requirements/REQUIREMENTS-REGISTER.md), [`NFR-001`](../01-requirements/REQUIREMENTS-REGISTER.md)
 * **关联 ADRs**: [`ADR-002`](../03-decisions/ADR-002-environment-isolation.md), [`ADR-003`](../03-decisions/ADR-003-kubernetes-platform.md)
 * **依赖项**: `WP-003`, `WP-004`
@@ -133,7 +135,9 @@
 ---
 
 ### `WP-015`: 生产环境 AWS 基础设施建设
+* **规划标签**: `TERRAFORM_PROD_EARLYSTART_PLANNING`
 * **描述**: 在 `DataBlue-Prod-Account` 中拉起生产 AWS VPC、安全组、EKS 集群与数据库。
+* **预估时长**: **5 个工作日** (5 Days)。
 * **关联需求**: [`BUS-003`](../01-requirements/REQUIREMENTS-REGISTER.md), [`SEC-002`](../01-requirements/REQUIREMENTS-REGISTER.md)
 * **关联 ADRs**: [`ADR-001`](../03-decisions/ADR-001-aws-account-strategy.md)–[`ADR-003`](../03-decisions/ADR-003-kubernetes-platform.md)
 * **依赖项**: `WP-014`, [`GATE-07`](ACCEPTANCE-GATES.md)

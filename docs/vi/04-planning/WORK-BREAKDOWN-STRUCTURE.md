@@ -77,7 +77,9 @@ Mỗi gói công việc (Work Package - WP) đều có thể truy xuất nguồn
 ---
 
 ### `WP-005`: Xây dựng EKS Control Plane Test & Worker Node Groups
+* **Mã Lập Kế hoạch**: `TERRAFORM_TEST_PLANNING`
 * **Mô tả**: Triển khai EKS cluster Test chuyên trách (`v1.30+`) trong `DataBlue-Test-Account` trên 3 AZs.
+* **Thời lượng Ước tính**: **5 ngày làm việc** (Triển khai & xác minh môi trường Test).
 * **Yêu cầu Liên quan**: [`BUS-001`](../01-requirements/REQUIREMENTS-REGISTER.md), [`FUN-001`](../01-requirements/REQUIREMENTS-REGISTER.md), [`NFR-001`](../01-requirements/REQUIREMENTS-REGISTER.md)
 * **ADR Liên quan**: [`ADR-002`](../03-decisions/ADR-002-environment-isolation.md), [`ADR-003`](../03-decisions/ADR-003-kubernetes-platform.md)
 * **Rủi ro Liên quan**: `RSK-OPS-001`, `RSK-SCL-001`
@@ -237,7 +239,9 @@ Mỗi gói công việc (Work Package - WP) đều có thể truy xuất nguồn
 ---
 
 ### `WP-015`: Cấp phát Tài khoản AWS Production & EKS Cluster Production
+* **Mã Lập Kế hoạch**: `TERRAFORM_PROD_EARLYSTART_PLANNING`
 * **Mô tả**: Cấp phát `DataBlue-Prod-Account` chuyên trách và EKS cluster Production sau khi CAB phê duyệt.
+* **Thời lượng Ước tính**: **5 ngày làm việc** (Triển khai & xác minh môi trường Production).
 * **Yêu cầu Liên quan**: [`BUS-003`](../01-requirements/REQUIREMENTS-REGISTER.md), [`SEC-002`](../01-requirements/REQUIREMENTS-REGISTER.md), [`NFR-001`](../01-requirements/REQUIREMENTS-REGISTER.md)
 * **ADR Liên quan**: [`ADR-001`](../03-decisions/ADR-001-aws-account-strategy.md), [`ADR-002`](../03-decisions/ADR-002-environment-isolation.md), [`ADR-003`](../03-decisions/ADR-003-kubernetes-platform.md)
 * **Rủi ro Liên quan**: `RSK-SEC-003`

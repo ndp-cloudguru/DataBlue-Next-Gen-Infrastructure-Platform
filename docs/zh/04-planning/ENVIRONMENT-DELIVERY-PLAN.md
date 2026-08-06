@@ -27,6 +27,7 @@
 | **备份与 Vault Lock** | 每日 DB 快照 (保留 7 天) | 每日 DB PITR + Velero S3 Vault Lock (30 天) | 强制执行跨账号勒索软件防护 (`OPS-002`)。 |
 | **变更控制** | Merge 至 `main` 时自动 GitOps 同步 | 强制 CAB 批准 + GitOps Tag Release 发布 | 防止未经审查的生产部署 (`AGENTS.md`)。 |
 | **删除保护** | 临时 Sandbox 资源禁用 | **启用** 于所有 EKS 集群、VPC 及 DB | 防止误删除生产资源 (`AGENTS.md`)。 |
+| **部署时长** | **5 个工作日** (`TERRAFORM_TEST_PLANNING`) | **5 个工作日** (`TERRAFORM_PROD_EARLYSTART_PLANNING`) | 标准化的 5 天基础设施拉起与验证窗口。 |
 
 ---
 

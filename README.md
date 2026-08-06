@@ -86,6 +86,22 @@ datablue-nextgen-infra-platform/
 │   ├── src/                                     # Raw .mmd Mermaid source files
 │   ├── svg/                                     # Rendered SVG vector graphics
 │   └── png/                                     # Rendered PNG bitmap images
+├── scenarios/                                   # Terraform Infrastructure as Code (IaC) Scenarios Directory
+│   ├── README.md                                # Scenarios guide and execution workflow
+│   ├── modules/                                 # 8 Reusable Production Core Terraform Modules
+│   │   ├── vpc/                                 # 3-Tier VPC Networking (Public, Private App, Isolated DB)
+│   │   ├── kms/                                 # KMS Customer Managed Key (CMK)
+│   │   ├── eks/                                 # Amazon EKS v1.30+ Control Plane, IRSA & Karpenter
+│   │   ├── rds_mysql/                           # Amazon RDS MySQL Multi-AZ with 30-Day PITR Backups
+│   │   ├── elasticache_redis/                   # Amazon ElastiCache Redis Cluster with TLS & Auth Token
+│   │   ├── amazon_mq_rabbitmq/                  # Amazon MQ RabbitMQ 3-Node Quorum Broker with AMQP TLS
+│   │   ├── documentdb/                          # Amazon DocumentDB 3-Node Cluster (MongoDB Compatible)
+│   │   └── opensearch/                          # Amazon OpenSearch Service Multi-AZ Cluster
+│   ├── scenario-1-test-baseline/                # Scenario 1: Standard Non-Prod Test Baseline ($1.6k-$2.4k/mo)
+│   ├── scenario-2-prod-baseline/                # Scenario 2: Production Baseline ($4.2k-$6.1k/mo)
+│   ├── scenario-3-prod-high-scale-ha/           # Scenario 3: Production High-Scale HA ($7.2k-$10.5k/mo)
+│   ├── scenario-4-prod-cross-region-dr/         # Scenario 4: Production Cross-Region DR ($10k-$14.8k/mo)
+│   └── scenario-5-enterprise-multi-account/     # Scenario 5: Enterprise Multi-Account Isolation ($12k-$18.5k/mo)
 └── docs/
     ├── en/                                      # English Documentation Tree (58 Markdown Files)
     │   ├── 00-governance/

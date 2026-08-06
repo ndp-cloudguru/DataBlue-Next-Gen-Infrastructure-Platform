@@ -86,6 +86,22 @@ datablue-nextgen-infra-platform/
 │   ├── src/                                     # File nguồn .mmd thuần
 │   ├── svg/                                     # Ảnh vector SVG rendered
 │   └── png/                                     # Ảnh bitmap PNG rendered
+├── scenarios/                                   # Thư mục Mã nguồn Terraform Infrastructure as Code (IaC) cho 5 Scenario
+│   ├── README.md                                # Hướng dẫn & Quy trình thực thi Terraform
+│   ├── modules/                                 # 8 Mô-đun Terraform Tái sử dụng Chuẩn Production
+│   │   ├── vpc/                                 # Mạng VPC 3-Tier (Public, Private App, Isolated DB)
+│   │   ├── kms/                                 # AWS KMS Customer Managed Key (CMK)
+│   │   ├── eks/                                 # Amazon EKS v1.30+ Control Plane, IRSA & Karpenter
+│   │   ├── rds_mysql/                           # Amazon RDS MySQL Multi-AZ với Sao lưu PITR 30 Ngày
+│   │   ├── elasticache_redis/                   # Amazon ElastiCache Redis Cluster với TLS & Auth Token
+│   │   ├── amazon_mq_rabbitmq/                  # Amazon MQ RabbitMQ 3-Node Quorum Broker với AMQP TLS
+│   │   ├── documentdb/                          # Amazon DocumentDB 3-Node Cluster (MongoDB Compatible)
+│   │   └── opensearch/                          # Amazon OpenSearch Service Multi-AZ Cluster
+│   ├── scenario-1-test-baseline/                # Scenario 1: Môi trường Test Chuẩn ($1,600-$2,400/tháng)
+│   ├── scenario-2-prod-baseline/                # Scenario 2: Môi trường Production Baseline ($4,200-$6,100/tháng)
+│   ├── scenario-3-prod-high-scale-ha/           # Scenario 3: Môi trường Production HA Quy mô lớn ($7,200-$10,500/tháng)
+│   ├── scenario-4-prod-cross-region-dr/         # Scenario 4: Production Khôi phục Thảm họa Cross-Region DR ($10,000-$14,800/tháng)
+│   └── scenario-5-enterprise-multi-account/     # Scenario 5: Kiến trúc Cách ly Đa Tài khoản Doanh nghiệp ($12,000-$18,500/tháng)
 └── docs/
     ├── en/                                      # Cây Tài liệu Tiếng Anh (58 file Markdown)
     ├── vi/                                      # Cây Tài liệu Tiếng Việt (58 file Markdown)

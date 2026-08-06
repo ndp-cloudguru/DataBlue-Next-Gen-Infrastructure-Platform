@@ -54,8 +54,10 @@ graph TD
 
 ---
 
-### 阶段 2 — 测试环境平台建设 (Test Environment Platform Construction)
+### 阶段 2 — 测试环境平台建设 (`TERRAFORM_TEST_PLANNING`)
+* **规划标识符**: `TERRAFORM_TEST_PLANNING`
 * **目标**: 部署专有的测试 EKS 集群、工作节点组、Ingress 及 Pod 身份边界。
+* **部署时长**: **5 个工作日** (5 Days)。
 * **依赖项**: 阶段 1 完成, [`ADR-002`](../03-decisions/ADR-002-environment-isolation.md), [`ADR-003`](../03-decisions/ADR-003-kubernetes-platform.md)。
 * **核心活动**: 部署测试 EKS 集群 (`v1.30+`)；配置 IAM IRSA OIDC 端点；部署 AWS Load Balancer Controller 及 Cloudflare DNS / GTM 集成。
 * **人工批准门槛**: [`GATE-05`](ACCEPTANCE-GATES.md)。
@@ -96,8 +98,10 @@ graph TD
 
 ---
 
-### 阶段 7 — 生产环境平台建设 (Production Platform Construction)
+### 阶段 7 — 生产环境平台建设 (`TERRAFORM_PROD_EARLYSTART_PLANNING`)
+* **规划标识符**: `TERRAFORM_PROD_EARLYSTART_PLANNING`
 * **目标**: 搭建隔离的生产 AWS 账号与生产 EKS 集群。
+* **部署时长**: **5 个工作日** (5 Days)。
 * **依赖项**: 阶段 6 完成, 变更咨询委员会 (CAB) 签署。
 * **核心活动**: 通过 Terraform 拉起生产 AWS 账号；部署生产 EKS 多可用区集群；配置 AWS Backup Vault Lock 与跨账号 S3 备份副本。
 * **人工批准门槛**: [`GATE-07`](ACCEPTANCE-GATES.md)。

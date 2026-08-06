@@ -27,6 +27,7 @@ In accordance with requirement `BUS-003` and [`ADR-002`](../03-decisions/ADR-002
 | **Backup & Vault Lock** | Daily DB snapshots (7-day retention) | Daily DB PITR + Velero S3 Vault Lock (30-day) | Enforces cross-account ransomware protection (`OPS-002`). |
 | **Change Control** | Automated GitOps sync on `main` merge | Mandatory CAB approval + GitOps tag release | Prevents un-reviewed production deployments (`AGENTS.md`). |
 | **Deletion Protection** | Disabled for temporary sandbox resources | **ENABLED** on all EKS clusters, VPCs, & DBs | Prevents accidental production resource destruction (`AGENTS.md`). |
+| **Deployment Duration** | **5 Business Days** (`TERRAFORM_TEST_PLANNING`) | **5 Business Days** (`TERRAFORM_PROD_EARLYSTART_PLANNING`) | Standardized 5-day infrastructure provisioning and verification window. |
 
 ---
 

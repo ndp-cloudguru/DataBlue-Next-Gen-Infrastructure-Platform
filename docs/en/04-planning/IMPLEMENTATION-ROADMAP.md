@@ -56,8 +56,10 @@ graph TD
 
 ---
 
-### Phase 2 — Test Environment Platform Construction
+### Phase 2 — Test Environment Platform Construction (`TERRAFORM_TEST_PLANNING`)
+* **Planning Identifier**: `TERRAFORM_TEST_PLANNING`
 * **Objective**: Deploy dedicated Test EKS cluster, worker node groups, ingress, and pod identity boundaries.
+* **Deployment Duration**: **5 Business Days** (5 Days).
 * **Dependencies**: Phase 1 completion, [`ADR-002`](../03-decisions/ADR-002-environment-isolation.md), [`ADR-003`](../03-decisions/ADR-003-kubernetes-platform.md).
 * **Key Activities**: Provision Test EKS cluster (`v1.30+`); configure IAM IRSA OIDC endpoint; deploy AWS Load Balancer Controller and Cloudflare DNS / GTM integration.
 * **Blockers**: Test AWS account quota limits.
@@ -99,8 +101,10 @@ graph TD
 
 ---
 
-### Phase 7 — Production Platform Construction
+### Phase 7 — Production Platform Construction (`TERRAFORM_PROD_EARLYSTART_PLANNING`)
+* **Planning Identifier**: `TERRAFORM_PROD_EARLYSTART_PLANNING`
 * **Objective**: Provision isolated Production AWS Account and Production EKS cluster.
+* **Deployment Duration**: **5 Business Days** (5 Days).
 * **Dependencies**: Phase 6 completion, Change Advisory Board (CAB) sign-off.
 * **Key Activities**: Provision Production AWS Account via Terraform; deploy Production EKS multi-AZ cluster; configure AWS Backup Vault Lock and cross-account S3 backup copy.
 * **Human Approval Gate**: [`GATE-07`](ACCEPTANCE-GATES.md).

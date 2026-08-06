@@ -77,7 +77,9 @@ Every work package is traceable to Requirement IDs (`BUS`, `FUN`, `NFR`, `SEC`, 
 ---
 
 ### `WP-005`: Test EKS Control Plane & Worker Node Groups Construction
+* **Planning Tag**: `TERRAFORM_TEST_PLANNING`
 * **Description**: Deploy dedicated Test EKS cluster (`v1.30+`) in `DataBlue-Test-Account` across 3 AZs.
+* **Estimated Duration**: **5 Business Days** (Test environment deployment & validation).
 * **Related Requirements**: [`BUS-001`](../01-requirements/REQUIREMENTS-REGISTER.md), [`FUN-001`](../01-requirements/REQUIREMENTS-REGISTER.md), [`NFR-001`](../01-requirements/REQUIREMENTS-REGISTER.md)
 * **Related ADRs**: [`ADR-002`](../03-decisions/ADR-002-environment-isolation.md), [`ADR-003`](../03-decisions/ADR-003-kubernetes-platform.md)
 * **Related Risks**: `RSK-OPS-001`, `RSK-SCL-001`
@@ -237,7 +239,9 @@ Every work package is traceable to Requirement IDs (`BUS`, `FUN`, `NFR`, `SEC`, 
 ---
 
 ### `WP-015`: Production AWS Account & Production EKS Cluster Provisioning
+* **Planning Tag**: `TERRAFORM_PROD_EARLYSTART_PLANNING`
 * **Description**: Provision dedicated `DataBlue-Prod-Account` and Production EKS cluster following CAB approval.
+* **Estimated Duration**: **5 Business Days** (Production environment deployment & validation).
 * **Related Requirements**: [`BUS-003`](../01-requirements/REQUIREMENTS-REGISTER.md), [`SEC-002`](../01-requirements/REQUIREMENTS-REGISTER.md), [`NFR-001`](../01-requirements/REQUIREMENTS-REGISTER.md)
 * **Related ADRs**: [`ADR-001`](../03-decisions/ADR-001-aws-account-strategy.md), [`ADR-002`](../03-decisions/ADR-002-environment-isolation.md), [`ADR-003`](../03-decisions/ADR-003-kubernetes-platform.md)
 * **Related Risks**: `RSK-SEC-003`

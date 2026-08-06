@@ -27,6 +27,7 @@ Theo đúng yêu cầu `BUS-003` và [`ADR-002`](../03-decisions/ADR-002-environ
 | **Sao lưu & Vault Lock** | Snapshot DB hàng ngày (lưu trữ 7 ngày) | DB PITR hàng ngày + Velero S3 Vault Lock (30 ngày) | Thực thi bảo vệ chống ransomware xuyên tài khoản (`OPS-002`). |
 | **Kiểm soát Thay đổi** | Tự động đồng bộ GitOps khi merge `main` | Bắt buộc phê duyệt CAB + release tag GitOps | Ngăn ngừa triển khai production chưa qua review (`AGENTS.md`). |
 | **Bảo vệ Chống Xóa** | Tắt đối với tài nguyên sandbox tạm thời | **BẬT** trên tất cả EKS clusters, VPCs, & DBs | Ngăn ngừa vô tình xóa phá hủy tài nguyên production (`AGENTS.md`). |
+| **Thời lượng Triển khai** | **5 ngày làm việc** (`TERRAFORM_TEST_PLANNING`) | **5 ngày làm việc** (`TERRAFORM_PROD_EARLYSTART_PLANNING`) | Lộ trình cấp phát hạ tầng, cấu hình và xác minh tiêu chuẩn 5 ngày. |
 
 ---
 

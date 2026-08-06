@@ -55,8 +55,10 @@ graph TD
 
 ---
 
-### Giai đoạn 2 — Xây dựng Nền tảng Môi trường Test
+### Giai đoạn 2 — Xây dựng Nền tảng Môi trường Test (`TERRAFORM_TEST_PLANNING`)
+* **Mã Kế hoạch**: `TERRAFORM_TEST_PLANNING`
 * **Mục tiêu**: Triển khai EKS cluster Test chuyên trách, worker node groups, ingress, và ranh giới định danh pod identity.
+* **Thời lượng Triển khai**: **5 ngày làm việc** (5 Days).
 * **Phụ thuộc**: Hoàn thành Giai đoạn 1, [`ADR-002`](../03-decisions/ADR-002-environment-isolation.md), [`ADR-003`](../03-decisions/ADR-003-kubernetes-platform.md).
 * **Hoạt động Chính**: Cấp phát EKS cluster Test (`v1.30+`); cấu hình endpoint IAM IRSA OIDC; triển khai AWS Load Balancer Controller và tích hợp Cloudflare DNS / GTM.
 * **Vấn đề Chặn (Blockers)**: Hạn ngạch (quota) tài khoản AWS Test.
@@ -98,8 +100,10 @@ graph TD
 
 ---
 
-### Giai đoạn 7 — Xây dựng Nền tảng Môi trường Production
+### Giai đoạn 7 — Xây dựng Nền tảng Môi trường Production (`TERRAFORM_PROD_EARLYSTART_PLANNING`)
+* **Mã Kế hoạch**: `TERRAFORM_PROD_EARLYSTART_PLANNING`
 * **Mục tiêu**: Cấp phát tài khoản AWS Production cô lập và EKS cluster Production.
+* **Thời lượng Triển khai**: **5 ngày làm việc** (5 Days).
 * **Phụ thuộc**: Hoàn thành Giai đoạn 6, Ký duyệt từ Hội đồng Phê duyệt Thay đổi (CAB).
 * **Hoạt động Chính**: Cấp phát tài khoản AWS Production qua Terraform; triển khai EKS cluster Production multi-AZ; cấu hình AWS Backup Vault Lock và bản sao S3 backup xuyên tài khoản.
 * **Cổng Phê duyệt**: [`GATE-07`](ACCEPTANCE-GATES.md).
