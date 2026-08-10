@@ -1,0 +1,4 @@
+core_account_id="111111111111"
+entry_account_id="444444444444"
+state_bucket="datablue-tfstate-ap-southeast-1-REPLACE-ME"
+core_app_port=8080

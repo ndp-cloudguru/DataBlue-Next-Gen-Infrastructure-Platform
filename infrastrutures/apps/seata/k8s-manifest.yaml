@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: seata-headless
+  namespace: datablue-test
+  labels:
+    app: seata
+spec:
+  ports:
+  - port: 8091
+    name: service-port
+  - port: 7091
+    name: console-port
+  clusterIP: None
+  selector:
+    app: seata
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seata-service
+  namespace: datablue-test
+  labels:
+    app: seata
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8091
+    targetPort: 8091
+    name: service-port
+  - port: 7091
+    targetPort: 7091
+    name: console-port
+  selector:
+    app: seata
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seata
+  namespace: datablue-test
+spec:
+  serviceName: seata-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seata
+  template:
+    metadata:
+      labels:
+        app: seata
+    spec:
+      serviceAccountName: app-core-sa
+      containers:
+      - name: seata-server
+        image: seataio/seata-server:1.7.0
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        env:
+        - name: SEATA_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: SEATA_PORT
+          value: "8091"
+        - name: STORE_MODE
+          value: "file"
+        - name: REGISTRY_TYPE
+          value: "nacos"
+        - name: REGISTRY_NACOS_SERVER_ADDR
+          value: "nacos-service.datablue-test.svc.cluster.local:8848"
+        - name: REGISTRY_NACOS_APPLICATION
+          value: "seata-server"
+        - name: REGISTRY_NACOS_GROUP
+          value: "SEATA_GROUP"
+        - name: CONFIG_TYPE
+          value: "file"
+        - name: REGISTRY_TYPE
+          value: "nacos"
+        - name: REGISTRY_NACOS_SERVER_ADDR
+          value: "nacos-service.datablue-test.svc.cluster.local:8848"
+        - name: REGISTRY_NACOS_APPLICATION
+          value: "seata-server"
+        - name: REGISTRY_NACOS_GROUP
+          value: "SEATA_GROUP"
+        - name: REGISTRY_NACOS_USERNAME
+          value: "nacos"
+        - name: REGISTRY_NACOS_PASSWORD
+          value: "nacos"
+        ports:
+        - containerPort: 8091
+          name: service-port
+        - containerPort: 7091
+          name: console-port

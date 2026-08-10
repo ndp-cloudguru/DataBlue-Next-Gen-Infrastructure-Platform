@@ -1,0 +1,9 @@
+output "vpc_id" { value = module.vpc.vpc_id }
+output "vpc_cidr" { value = module.vpc.vpc_cidr }
+output "private_route_table_ids" { value = module.vpc.private_route_table_ids }
+output "public_subnet_ids" { value = module.vpc.public_subnet_ids }
+output "private_app_subnet_ids" { value = module.vpc.private_app_subnet_ids }
+output "nlb_dns_name" { value = module.runtime.nlb_dns_name }
+output "ecs_cluster_name" { value = module.runtime.ecs_cluster_name }
+output "ecs_service_name" { value = module.runtime.ecs_service_name }
+output "ecs_security_group_id" { value = module.runtime.ecs_security_group_id }

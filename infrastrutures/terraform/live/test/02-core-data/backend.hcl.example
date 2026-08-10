@@ -1,0 +1,7 @@
+bucket="datablue-tfstate-ap-southeast-1-REPLACE-ME"
+key="test/02-core-data/terraform.tfstate"
+region="ap-southeast-1"
+encrypt=true
+use_lockfile=true
+dynamodb_table="datablue-test-tflocks"
+profile="datablue-test-core"

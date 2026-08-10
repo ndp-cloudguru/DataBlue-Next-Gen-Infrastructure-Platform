@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: datablue-test
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-core-sa
+  namespace: datablue-test
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::580857941574:role/datablue-test-app-core-irsa-role
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-checker
+  namespace: datablue-test
+  labels:
+    app: data-checker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-checker
+  template:
+    metadata:
+      labels:
+        app: data-checker
+    spec:
+      serviceAccountName: app-core-sa
+      containers:
+      - name: data-checker
+        image: 580857941574.dkr.ecr.ap-southeast-1.amazonaws.com/datablue-test/backend-api:v1.2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6969
+        env:
+        - name: PORT
+          value: "6969"
+        - name: AWS_REGION
+          value: "ap-southeast-1"
+        - name: RDS_SECRET_NAME
+          value: "datablue/test/rds-mysql"
+        - name: REDIS_SECRET_NAME
+          value: "datablue/test/redis"
+        - name: MQ_SECRET_NAME
+          value: "datablue/test/rabbitmq"
+        - name: RABBITMQ_HOST
+          value: "b-fb078dff-6d79-4f3e-b997-08445dd7b3d5.mq.ap-southeast-1.on.aws"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-checker-service
+  namespace: datablue-test
+spec:
+  type: ClusterIP
+  selector:
+    app: data-checker
+  ports:
+  - name: http
+    port: 6969
+    targetPort: 6969

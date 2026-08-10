@@ -1,0 +1,2 @@
+aws_account_id="444444444444"
+proxy_image="nginx:1.27-alpine"

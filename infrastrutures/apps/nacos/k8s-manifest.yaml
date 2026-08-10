@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nacos-rds-secret
+  namespace: datablue-test
+type: Opaque
+stringData:
+  username: admin_datablue
+  password: 6q3G^%rtl91-agxs-HnyyD+k
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-headless
+  namespace: datablue-test
+  labels:
+    app: nacos
+spec:
+  ports:
+  - port: 8848
+    name: server
+  - port: 9848
+    name: client-grpc
+  - port: 9849
+    name: raft-grpc
+  clusterIP: None
+  selector:
+    app: nacos
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-service
+  namespace: datablue-test
+  labels:
+    app: nacos
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8848
+    targetPort: 8848
+    name: server
+  - port: 9848
+    targetPort: 9848
+    name: client-grpc
+  selector:
+    app: nacos
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nacos
+  namespace: datablue-test
+spec:
+  serviceName: nacos-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nacos
+  template:
+    metadata:
+      labels:
+        app: nacos
+    spec:
+      serviceAccountName: app-core-sa
+      containers:
+      - name: nacos
+        image: nacos/nacos-server:v2.3.0-slim
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        env:
+        - name: MODE
+          value: "standalone"
+        - name: SPRING_DATASOURCE_PLATFORM
+          value: "mysql"
+        - name: MYSQL_SERVICE_HOST
+          value: "datablue-test-mysql.cdw6qg4eg8qw.ap-southeast-1.rds.amazonaws.com"
+        - name: MYSQL_SERVICE_DB_NAME
+          value: "nacos_config"
+        - name: MYSQL_SERVICE_PORT
+          value: "3306"
+        - name: MYSQL_SERVICE_USER
+          valueFrom:
+            secretKeyRef:
+              name: nacos-rds-secret
+              key: username
+        - name: MYSQL_SERVICE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nacos-rds-secret
+              key: password
+        - name: MYSQL_SERVICE_DB_PARAM
+          value: "characterEncoding=utf8&connectTimeout=1000&socketTimeout=30000&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true"
+        - name: NACOS_SERVERS
+          value: "nacos-0.nacos-headless.datablue-test.svc.cluster.local:8848"
+        - name: PREFER_HOST_MODE
+          value: "hostname"
+        - name: NACOS_AUTH_ENABLE
+          value: "true"
+        - name: NACOS_AUTH_TOKEN
+          value: "SecretKey012345678901234567890123456789012345678901234567890123456789"
+        - name: NACOS_AUTH_IDENTITY_KEY
+          value: "serverIdentity"
+        - name: NACOS_AUTH_IDENTITY_VALUE
+          value: "security"
+        - name: NACOS_USER
+          value: "nacos"
+        - name: NACOS_PASS
+          value: "nacos"
+        - name: JVM_XMS
+          value: "512m"
+        - name: JVM_XMX
+          value: "512m"
+        ports:
+        - containerPort: 8848
+          name: server
+        - containerPort: 9848
+          name: client-grpc
+        - containerPort: 9849
+          name: raft-grpc
