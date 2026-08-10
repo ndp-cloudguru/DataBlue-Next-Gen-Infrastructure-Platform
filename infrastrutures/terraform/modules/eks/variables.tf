@@ -38,7 +38,14 @@ variable "desired_size" {
   description = "Desired size of EKS node group (must be specified per environment)"
 }
 
+variable "cluster_service_ipv4_cidr" {
+  type        = string
+  default     = "172.20.0.0/16"
+  description = "The CIDR block to assign Kubernetes service IP addresses from"
+}
+
 variable "tags" {
   type    = map(string)
   default = {}
 }
+
